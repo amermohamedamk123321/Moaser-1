@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { Target, Eye, Heart, Lightbulb, BookOpen, Star } from "lucide-react";
+import { Target, Eye, CheckCircle2, BookOpen, Lightbulb, CheckSquare } from "lucide-react";
 import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 
-const valueIcons = [Heart, BookOpen, Lightbulb, Star];
+const valueIcons = [CheckCircle2, BookOpen, Lightbulb, CheckSquare];
 
 export default function VisionMissionSection() {
   const { t } = useTranslation();
@@ -31,9 +31,9 @@ export default function VisionMissionSection() {
           </AnimatedItem>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-8 lg:grid-cols-3">
           <AnimatedItem variant="fadeLeft">
-            <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow h-full">
+            <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow hover:-translate-y-1 h-full">
               <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                 <Eye className="h-7 w-7" />
               </div>
@@ -42,13 +42,23 @@ export default function VisionMissionSection() {
             </div>
           </AnimatedItem>
 
-          <AnimatedItem variant="fadeRight">
-            <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow h-full">
+          <AnimatedItem variant="scaleUp">
+            <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow hover:-translate-y-1 h-full">
               <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
                 <Target className="h-7 w-7" />
               </div>
               <h3 className="mb-4 font-heading text-2xl font-bold text-foreground">{t("vision.missionTitle")}</h3>
               <p className="text-muted-foreground leading-relaxed">{t("vision.missionText")}</p>
+            </div>
+          </AnimatedItem>
+
+          <AnimatedItem variant="fadeRight">
+            <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow hover:-translate-y-1 h-full">
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                <CheckCircle2 className="h-7 w-7" />
+              </div>
+              <h3 className="mb-4 font-heading text-2xl font-bold text-foreground">{t("vision.goalsTitle")}</h3>
+              <p className="text-muted-foreground leading-relaxed">{t("vision.goalsText")}</p>
             </div>
           </AnimatedItem>
         </div>
@@ -60,9 +70,9 @@ export default function VisionMissionSection() {
               {values.map((v, i) => (
                 <div
                   key={i}
-                  className="group flex items-start gap-3 rounded-xl bg-accent/50 p-4 transition-all duration-300 hover:bg-accent"
+                  className="group flex flex-col items-start gap-3 rounded-xl bg-gradient-to-br from-accent/40 to-accent/20 border border-accent/30 p-4 transition-all duration-300 hover:from-accent/60 hover:to-accent/40 hover:border-accent/50 hover:shadow-md"
                 >
-                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-secondary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110">
                     <v.icon className="h-5 w-5" />
                   </div>
                   <p className="text-sm font-medium text-foreground leading-relaxed">{v.label}</p>

@@ -93,16 +93,18 @@
   },
   "vision": {
     "tag": "Our Purpose",
-    "title": "Vision, Mission & Values",
+    "title": "Vision, Mission, Objectives & Values",
     "visionTitle": "Our Vision",
-    "visionText": "Moaser Specialized Dental Hospital aims to become a reputable scientific and professional institution — a reference hospital, a center for offering new services in dental medicine at the national level, and a focal point for dental medicine tourism.",
+    "visionText": "Moaser Specialized Dental Hospital, as a reputable scientific and professional institution, strives to become a reference hospital, a center for providing new services in the field of dental practice and stomatology at the national level, and a hub for the distribution of dental medicine and stomatology.",
     "missionTitle": "Our Mission",
-    "missionText": "Relying on scientific capacity, human resources, and advanced technology with a focus on creative, innovative methods, we provide high-quality stomatology services. We aim to improve public attitudes toward dental care centers and restore the credibility of the dentistry sector through precise, evidence-based care.",
+    "missionText": "Moaser Specialized Dental Hospital, relying on scientific capacity and human resources, and utilizing advanced technology with a focus on modern, creative, and innovative methods, provides diagnostic and precision services in dental practice and stomatology. By offering regular check-up services, we strive to improve society's perception of stomatology service centers, to stabilize the lost position of this sector, and to restore the credibility of stomatology practice. Precise and evidence-based scientific services are a major priority of this specialized center.",
+    "goalsTitle": "Our Objectives",
+    "goalsText": "Given that the provision of health services in Kabul city is often done individually and non-collaboratively, relying on personal opinions without specialist consultation, coupled with limited modern facilities. We intend to establish a specialized team comprising multiple dental departments, within a well-equipped complex with advanced facilities. We will strive to provide effective, useful, and satisfying services to our patients.",
     "valuesTitle": "Our Core Values",
-    "value1": "Commitment to moral conduct and human dignity",
-    "value2": "Knowledge-centeredness and evidence-based services",
-    "value3": "Scientific research and medical knowledge generation",
-    "value4": "Creativity and innovation in dental care"
+    "value1": "Adherence to the sublime religion of Islam, ethical conduct, and the preservation of human dignity",
+    "value2": "Knowledge-centricity, specialization, and evidence-based services",
+    "value3": "Scientific and academic research and the production of medical knowledge and science",
+    "value4": "Creativity and innovation"
   },
   "contact": {
     "tag": "Get In Touch",
