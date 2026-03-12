@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 210 30% 98%;
+    --foreground: 202 83% 16%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 202 83% 16%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 202 83% 16%;
+
+    --primary: 202 83% 16%;
+    --primary-foreground: 210 30% 98%;
+
+    --secondary: 204 37% 40%;
+    --secondary-foreground: 210 30% 98%;
+
+    --muted: 204 20% 94%;
+    --muted-foreground: 204 20% 46%;
+
+    --accent: 204 60% 92%;
+    --accent-foreground: 202 83% 16%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 204 25% 88%;
+    --input: 204 25% 88%;
+    --ring: 204 37% 40%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 202 83% 16%;
+    --sidebar-foreground: 210 30% 98%;
+    --sidebar-primary: 204 37% 40%;
+    --sidebar-primary-foreground: 210 30% 98%;
+    --sidebar-accent: 204 60% 92%;
+    --sidebar-accent-foreground: 202 83% 16%;
+    --sidebar-border: 204 25% 88%;
+    --sidebar-ring: 204 37% 40%;
+
+    /* Custom tokens */
+    --hero-gradient: linear-gradient(135deg, hsl(202 83% 16%) 0%, hsl(204 37% 40%) 100%);
+    --glass-bg: hsl(0 0% 100% / 0.85);
+    --glass-border: hsl(204 25% 88% / 0.5);
+    --shadow-primary: 0 20px 60px -15px hsl(202 83% 16% / 0.3);
+    --shadow-card: 0 8px 30px -8px hsl(202 83% 16% / 0.12);
+    --shadow-glow: 0 0 40px hsl(204 37% 40% / 0.2);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    font-family: 'Inter', sans-serif;
+  }
+
+  .dark {
+    --background: 202 83% 6%;
+    --foreground: 210 30% 95%;
+
+    --card: 202 70% 10%;
+    --card-foreground: 210 30% 95%;
+
+    --popover: 202 70% 10%;
+    --popover-foreground: 210 30% 95%;
+
+    --primary: 204 50% 70%;
+    --primary-foreground: 202 83% 8%;
+
+    --secondary: 204 37% 40%;
+    --secondary-foreground: 210 30% 95%;
+
+    --muted: 202 40% 15%;
+    --muted-foreground: 204 20% 65%;
+
+    --accent: 202 50% 18%;
+    --accent-foreground: 210 30% 95%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 202 40% 18%;
+    --input: 202 40% 18%;
+    --ring: 204 50% 60%;
+
+    --shadow-primary: 0 20px 60px -15px hsl(202 83% 6% / 0.5);
+    --shadow-card: 0 8px 30px -8px hsl(0 0% 0% / 0.3);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-size: 114%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .font-heading {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .text-gradient {
+    background: var(--hero-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .shadow-primary-lg {
+    box-shadow: var(--shadow-primary);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+/* Persian (Dari) font overrides — Vazirmatn loaded via CDN */
+[lang="fa"] {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+[lang="fa"] h1, [lang="fa"] h2, [lang="fa"] h3,
+[lang="fa"] h4, [lang="fa"] h5, [lang="fa"] h6,
+[lang="fa"] .font-heading {
+  font-family: 'Vazirmatn', sans-serif !important;
+  font-weight: 700;
+}
+
+[lang="fa"] .font-body {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* Persian/Arabic script requires zero letter-spacing to keep cursive connections */
+[lang="fa"] * {
+  letter-spacing: 0 !important;
+  word-spacing: normal !important;
+}
