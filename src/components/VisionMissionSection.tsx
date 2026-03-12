@@ -31,7 +31,7 @@ export default function VisionMissionSection() {
           </AnimatedItem>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid gap-8 lg:grid-cols-2">
           <AnimatedItem variant="fadeLeft">
             <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow hover:-translate-y-1 h-full">
               <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -42,7 +42,7 @@ export default function VisionMissionSection() {
             </div>
           </AnimatedItem>
 
-          <AnimatedItem variant="scaleUp">
+          <AnimatedItem variant="fadeRight">
             <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow hover:-translate-y-1 h-full">
               <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
                 <Target className="h-7 w-7" />
@@ -52,7 +52,7 @@ export default function VisionMissionSection() {
             </div>
           </AnimatedItem>
 
-          <AnimatedItem variant="fadeRight">
+          <AnimatedItem variant="scaleUp" className="lg:col-span-1">
             <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow hover:-translate-y-1 h-full">
               <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
                 <CheckCircle2 className="h-7 w-7" />
@@ -65,7 +65,8 @@ export default function VisionMissionSection() {
 
         <AnimatedItem>
           <div className="mt-8 rounded-2xl border border-border bg-card p-8 shadow-card">
-            <h3 className="mb-6 text-center font-heading text-2xl font-bold text-foreground">{t("vision.valuesTitle")}</h3>
+            <h3 className="mb-4 text-center font-heading text-2xl font-bold text-foreground">{t("vision.valuesTitle")}</h3>
+            <p className="mb-6 text-center text-muted-foreground leading-relaxed">{t("vision.valuesIntro")}</p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {values.map((v, i) => (
                 <div
