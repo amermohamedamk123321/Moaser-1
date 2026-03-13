@@ -52,13 +52,21 @@ export default function VisionMissionSection() {
             </div>
           </AnimatedItem>
 
-          <AnimatedItem variant="scaleUp" className="lg:col-span-1">
-            <div className="rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-glow hover:-translate-y-1 h-full">
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                <CheckCircle2 className="h-7 w-7" />
+          <AnimatedItem variant="scaleUp" className="lg:col-span-2">
+            <div className="group rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:shadow-lg hover:-translate-y-1 h-full relative overflow-hidden">
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-blue-400/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+              {/* Glow effect on hover */}
+              <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(59,130,246,0.3)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+              <div className="relative z-10">
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-accent-foreground transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                  <CheckCircle2 className="h-7 w-7" />
+                </div>
+                <h3 className="mb-4 font-heading text-2xl font-bold text-foreground">{t("vision.goalsTitle")}</h3>
+                <p className="text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors duration-300">{t("vision.goalsText")}</p>
               </div>
-              <h3 className="mb-4 font-heading text-2xl font-bold text-foreground">{t("vision.goalsTitle")}</h3>
-              <p className="text-muted-foreground leading-relaxed">{t("vision.goalsText")}</p>
             </div>
           </AnimatedItem>
         </div>
