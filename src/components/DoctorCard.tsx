@@ -32,13 +32,13 @@ export default function DoctorCard({ docKey, initials, index }: DoctorCardProps)
   return (
     <div className="group flex flex-col items-center text-center">
       {/* Circular photo area with layered rings */}
-      <div className="relative mb-8">
+      <div className="relative mb-10">
         {/* Outer decorative ring — sky blue glow */}
         <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-ring/20 to-secondary/15 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl" />
         <div className="absolute -inset-6 rounded-full border-[3px] border-dashed border-ring/50 opacity-0 group-hover:opacity-100 group-hover:animate-spin transition-opacity duration-700 [animation-duration:10s]" />
 
         {/* Main avatar circle */}
-        <div className="relative h-40 w-40 sm:h-44 sm:w-44 lg:h-48 lg:w-48 rounded-full p-1 bg-gradient-to-br from-primary via-secondary to-ring shadow-[0_8px_40px_-8px_hsl(var(--ring)/0.35)] group-hover:shadow-[0_12px_50px_-6px_hsl(var(--ring)/0.5)] transition-all duration-700 group-hover:scale-105">
+        <div className="relative h-56 w-56 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-1 bg-gradient-to-br from-primary via-secondary to-ring shadow-[0_8px_40px_-8px_hsl(var(--ring)/0.35)] group-hover:shadow-[0_12px_50px_-6px_hsl(var(--ring)/0.5)] transition-all duration-700 group-hover:scale-105">
           <div className="flex h-full w-full items-center justify-center rounded-full overflow-hidden bg-accent/60 backdrop-blur-sm">
             {imageUrl ? (
               <img
@@ -48,7 +48,7 @@ export default function DoctorCard({ docKey, initials, index }: DoctorCardProps)
                 loading="lazy"
               />
             ) : (
-              <span className="font-heading text-5xl sm:text-6xl font-bold text-primary select-none">
+              <span className="font-heading text-7xl sm:text-8xl font-bold text-primary select-none">
                 {initials}
               </span>
             )}

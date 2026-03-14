@@ -34,7 +34,7 @@ export default function HomeDoctorsPreview() {
           </AnimatedItem>
         </div>
 
-        <div className="grid gap-y-16 gap-x-8 sm:grid-cols-3 max-w-5xl mx-auto justify-items-center">
+        <div className="grid gap-y-20 gap-x-8 sm:grid-cols-3 max-w-5xl mx-auto justify-items-center">
           {topDoctors.map((doc, i) => (
             <AnimatedItem key={doc.key} variant="fadeUp" delay={i * 0.12}>
               <DoctorCard docKey={doc.key} initials={doc.initials} index={i} />
