@@ -7,8 +7,8 @@ import DoctorCard from "@/components/DoctorCard";
 
 const topDoctors = [
   { key: "doc1", initials: "RS" },
+  { key: "doc2", initials: "QT" },
   { key: "doc3", initials: "SA" },
-  { key: "doc7", initials: "RA" },
 ];
 
 export default function HomeDoctorsPreview() {
