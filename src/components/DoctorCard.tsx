@@ -39,12 +39,12 @@ export default function DoctorCard({ docKey, initials, index }: DoctorCardProps)
 
         {/* Main avatar circle */}
         <div className="relative h-56 w-56 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-1 bg-gradient-to-br from-primary via-secondary to-ring shadow-[0_8px_40px_-8px_hsl(var(--ring)/0.35)] group-hover:shadow-[0_12px_50px_-6px_hsl(var(--ring)/0.5)] transition-all duration-700 group-hover:scale-105">
-          <div className="flex h-full w-full items-center justify-center rounded-full overflow-hidden bg-accent/60 backdrop-blur-sm">
+          <div className="flex h-full w-full items-center justify-center rounded-full overflow-hidden bg-white backdrop-blur-sm">
             {imageUrl ? (
               <img
                 src={imageUrl}
                 alt={t(`doctors.${docKey}Name`)}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain bg-white"
                 loading="lazy"
               />
             ) : (
