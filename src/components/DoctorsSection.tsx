@@ -34,7 +34,7 @@ export default function DoctorsSection() {
           </AnimatedItem>
         </div>
 
-        <div className="grid gap-y-16 gap-x-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto justify-items-center">
+        <div className="grid gap-y-20 gap-x-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto justify-items-center">
           {doctorKeys.slice(0, -1).map((doc, i) => (
             <AnimatedItem key={doc.key} variant="scaleUp" delay={i * 0.08}>
               <DoctorCard docKey={doc.key} initials={doc.initials} index={i} />

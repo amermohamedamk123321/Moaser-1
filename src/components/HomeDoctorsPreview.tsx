@@ -7,8 +7,8 @@ import DoctorCard from "@/components/DoctorCard";
 
 const topDoctors = [
   { key: "doc1", initials: "RS" },
+  { key: "doc2", initials: "QT" },
   { key: "doc3", initials: "SA" },
-  { key: "doc7", initials: "RA" },
 ];
 
 export default function HomeDoctorsPreview() {
@@ -34,7 +34,7 @@ export default function HomeDoctorsPreview() {
           </AnimatedItem>
         </div>
 
-        <div className="grid gap-y-16 gap-x-8 sm:grid-cols-3 max-w-5xl mx-auto justify-items-center">
+        <div className="grid gap-y-20 gap-x-8 sm:grid-cols-3 max-w-5xl mx-auto justify-items-center">
           {topDoctors.map((doc, i) => (
             <AnimatedItem key={doc.key} variant="fadeUp" delay={i * 0.12}>
               <DoctorCard docKey={doc.key} initials={doc.initials} index={i} />
