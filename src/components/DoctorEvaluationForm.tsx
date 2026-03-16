@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Send, CheckCircle, UserRound } from "lucide-react";
+import { Send, CheckCircle, UserRound, Home, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
+import { useNavigate } from "react-router-dom";
 
 type Rating = "poor" | "average" | "excellent" | "";
 
@@ -34,6 +35,7 @@ const surveyKeys: { key: keyof Omit<DoctorSurveyData, "selectedDoctor" | "commen
 export default function DoctorEvaluationForm() {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const [survey, setSurvey] = useState<DoctorSurveyData>({
     selectedDoctor: "",
@@ -58,6 +60,24 @@ export default function DoctorEvaluationForm() {
     }
     setSubmitted(true);
     toast({ title: t("doctorEval.toastTitle"), description: t("doctorEval.toastDesc") });
+  };
+
+  const handleSubmitAnother = () => {
+    setSurvey({
+      selectedDoctor: "",
+      behavior: "",
+      competence: "",
+      treatmentQuality: "",
+      explanation: "",
+      followUp: "",
+      overallSatisfaction: "",
+      comments: "",
+    });
+    setSubmitted(false);
+  };
+
+  const handleGoHome = () => {
+    navigate("/");
   };
 
   const ratingOptions: { value: Rating; labelKey: string }[] = [
@@ -92,7 +112,26 @@ export default function DoctorEvaluationForm() {
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <CheckCircle className="mb-4 h-16 w-16 text-secondary" />
                   <h4 className="font-heading text-2xl font-bold text-foreground mb-2">{t("doctorEval.thankYou")}</h4>
-                  <p className="text-muted-foreground">{t("doctorEval.thankYouDesc")}</p>
+                  <p className="text-muted-foreground mb-8">{t("doctorEval.thankYouDesc")}</p>
+                  <div className="flex flex-col sm:flex-row gap-3 w-full">
+                    <Button
+                      onClick={handleSubmitAnother}
+                      variant="outline"
+                      size="lg"
+                      className="flex-1"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      {t("doctorEval.submitAnother")}
+                    </Button>
+                    <Button
+                      onClick={handleGoHome}
+                      size="lg"
+                      className="flex-1"
+                    >
+                      <Home className="h-4 w-4" />
+                      {t("doctorEval.backHome")}
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
