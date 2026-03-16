@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { LogOut, Trash2, Plus, Shield, ImageIcon, Eye, EyeOff } from "lucide-react";
+import { LogOut, Trash2, Plus, Shield, ImageIcon, Eye, EyeOff, BarChart3 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   getBeforeAfterImages,
@@ -18,6 +18,7 @@ import {
   BeforeAfterImage,
 } from "@/lib/beforeAfterStore";
 import PageTransition from "@/components/PageTransition";
+import DoctorsReport from "@/components/DoctorsReport";
 import logo from "@/assets/logo.png";
 
 const credSchema = z.object({
@@ -146,8 +147,22 @@ export default function AdminDashboard() {
           <Tabs defaultValue="images">
             <TabsList className="mb-6">
               <TabsTrigger value="images" className="gap-2"><ImageIcon className="w-4 h-4" /> Before & After</TabsTrigger>
+              <TabsTrigger value="reports" className="gap-2"><BarChart3 className="w-4 h-4" /> Doctors Report</TabsTrigger>
               <TabsTrigger value="credentials" className="gap-2"><Shield className="w-4 h-4" /> Credentials</TabsTrigger>
             </TabsList>
+
+            {/* --- Doctors Report Tab --- */}
+            <TabsContent value="reports" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="w-5 h-5" /> Doctor Evaluations</CardTitle>
+                  <CardDescription>View and manage all doctor evaluations submitted by patients.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <DoctorsReport />
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             {/* --- Before/After Images Tab --- */}
             <TabsContent value="images" className="space-y-6">

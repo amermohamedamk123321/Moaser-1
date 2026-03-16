@@ -244,6 +244,14 @@
     "toastTitle": "تشکر از همکاری شما!",
     "toastDesc": "ارزیابی داکتر شما با موفقیت ارسال شد."
   },
+  "doctorsReport": {
+    "tag": "گزارش داکتران",
+    "title": "ارزیابی‌های داکتران",
+    "totalEvaluations": "تعداد ارزیابی‌ها",
+    "avgSatisfaction": "میانگین رضایت",
+    "noEvaluations": "هنوز ارزیابی‌ای ثبت نشده",
+    "evaluation": "ارزیابی"
+  },
   "admin": {
     "back": "بازگشت",
     "title": "ورود مدیریت",

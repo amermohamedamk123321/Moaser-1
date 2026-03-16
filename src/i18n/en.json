@@ -244,6 +244,14 @@
     "toastTitle": "Thank you!",
     "toastDesc": "Your doctor evaluation has been submitted successfully."
   },
+  "doctorsReport": {
+    "tag": "Doctors Report",
+    "title": "Doctor Evaluations",
+    "totalEvaluations": "Total evaluations",
+    "avgSatisfaction": "Avg satisfaction",
+    "noEvaluations": "No evaluations yet",
+    "evaluation": "Evaluation"
+  },
   "admin": {
     "back": "Back",
     "title": "Admin Login",

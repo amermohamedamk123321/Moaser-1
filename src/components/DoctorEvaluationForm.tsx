@@ -52,14 +52,33 @@ export default function DoctorEvaluationForm() {
     setSurvey((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!survey.selectedDoctor) {
       toast({ title: t("doctorEval.selectDoctorWarning"), variant: "destructive" });
       return;
     }
-    setSubmitted(true);
-    toast({ title: t("doctorEval.toastTitle"), description: t("doctorEval.toastDesc") });
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/api/evaluations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(survey),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit evaluation");
+      }
+
+      setSubmitted(true);
+      toast({ title: t("doctorEval.toastTitle"), description: t("doctorEval.toastDesc") });
+    } catch (error) {
+      console.error("Error submitting evaluation:", error);
+      toast({ title: "Error", description: "Failed to submit evaluation. Please try again.", variant: "destructive" });
+    }
   };
 
   const handleSubmitAnother = () => {
