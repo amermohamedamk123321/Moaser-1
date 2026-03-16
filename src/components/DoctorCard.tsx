@@ -7,7 +7,7 @@ const DOCTOR_IMAGES: Record<string, string> = {
   doc3: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fb8206a1a6b0f43e9a860911f5b345e22?format=webp&width=800&height=1200",
   doc4: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F95b1cba1cdbe4d2da9923f097f66808c?format=webp&width=800&height=1200",
   doc5: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F73ab78914bf94396a1930fe1753d5eb8?format=webp&width=800&height=1200",
-  doc6: "",
+  doc6: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fdf9d695054ef47549acb665460642bef?format=webp&width=800&height=1200",
   doc7: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fa70a778c3ff449ea93b0d99e77e09e90?format=webp&width=800&height=1200",
 };
 
