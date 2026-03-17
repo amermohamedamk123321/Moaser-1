@@ -59,8 +59,8 @@ export function getDoctorStats(evaluations: DoctorEvaluation[]): DoctorStats {
   };
 
   const avgSatisfaction =
-    evaluations.reduce((sum, eval) => {
-      return sum + (satisfactionMap[eval.overallSatisfaction] || 0);
+    evaluations.reduce((sum, evaluation) => {
+      return sum + (satisfactionMap[evaluation.overallSatisfaction] || 0);
     }, 0) / evaluations.length;
 
   return {
