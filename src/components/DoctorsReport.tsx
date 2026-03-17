@@ -49,6 +49,15 @@ export default function DoctorsReport() {
         }
       });
 
+      // Sort evaluations by date (newest first)
+      Object.keys(groupedByDoctor).forEach((docKey) => {
+        groupedByDoctor[docKey].sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return dateB - dateA;
+        });
+      });
+
       setEvaluations(groupedByDoctor);
       setLoading(false);
     };
@@ -101,7 +110,7 @@ export default function DoctorsReport() {
                   ) : (
                     <div className="space-y-4 pt-4">
                       {doctorEvals.map((evaluation, index) => (
-                        <Collapsible key={evaluation.id} defaultOpen={false}>
+                        <Collapsible key={evaluation.id || index} defaultOpen={false}>
                           <CollapsibleTrigger asChild>
                             <Button
                               variant="outline"

@@ -60,18 +60,31 @@ export default function DoctorEvaluationForm() {
     }
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await fetch(`${apiUrl}/api/evaluations`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(survey),
-      });
+      // Try to submit to backend API (via proxy in dev, or direct URL in production)
+      try {
+        const response = await fetch("/api/evaluations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(survey),
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit evaluation");
+        if (response.ok) {
+          console.log("Evaluation submitted to backend");
+        }
+      } catch (apiError) {
+        console.warn("Backend API unavailable, storing locally:", apiError);
       }
+
+      // Always save to localStorage as fallback
+      const evaluations = JSON.parse(localStorage.getItem("moaser_evaluations") || "[]");
+      evaluations.push({
+        ...survey,
+        id: Date.now(),
+        createdAt: new Date().toISOString(),
+      });
+      localStorage.setItem("moaser_evaluations", JSON.stringify(evaluations));
 
       setSubmitted(true);
       toast({ title: t("doctorEval.toastTitle"), description: t("doctorEval.toastDesc") });

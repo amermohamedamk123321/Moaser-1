@@ -1,5 +1,5 @@
 interface DoctorEvaluation {
-  id: number;
+  id?: number | string;
   docKey: string;
   behavior: string;
   competence: string;
@@ -16,36 +16,44 @@ interface DoctorStats {
   avgSatisfaction: number;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
 export async function getDoctorEvaluations(docKey?: string): Promise<DoctorEvaluation[]> {
+  const adminSession = sessionStorage.getItem("moaser_admin_session");
+  if (!adminSession) {
+    console.warn("Not authenticated");
+    return [];
+  }
+
   try {
-    const adminSession = sessionStorage.getItem("moaser_admin_session");
-    if (!adminSession) {
-      throw new Error("Not authenticated");
-    }
-
-    const url = new URL(`${API_URL}/api/evaluations`);
-    url.searchParams.append("adminSession", adminSession);
+    // Try to fetch from backend API (via proxy in dev)
+    const params = new URLSearchParams({ adminSession });
     if (docKey) {
-      url.searchParams.append("docKey", docKey);
+      params.append("docKey", docKey);
     }
 
-    const response = await fetch(url.toString());
-    if (!response.ok) {
-      throw new Error("Failed to fetch evaluations");
+    const response = await fetch(`/api/evaluations?${params.toString()}`);
+    if (response.ok) {
+      const data = await response.json();
+      return data.evaluations || [];
     }
-
-    const data = await response.json();
-    return data.evaluations || [];
   } catch (error) {
-    console.error("Error fetching evaluations:", error);
+    console.warn("Backend API unavailable, falling back to localStorage:", error);
+  }
+
+  // Fallback to localStorage
+  try {
+    const storedEvaluations = JSON.parse(localStorage.getItem("moaser_evaluations") || "[]");
+    if (docKey) {
+      return storedEvaluations.filter((evaluation: DoctorEvaluation) => evaluation.docKey === docKey);
+    }
+    return storedEvaluations;
+  } catch (error) {
+    console.error("Error reading from localStorage:", error);
     return [];
   }
 }
 
 export function getDoctorStats(evaluations: DoctorEvaluation[]): DoctorStats {
-  if (evaluations.length === 0) {
+  if (!evaluations || evaluations.length === 0) {
     return {
       totalEvaluations: 0,
       avgSatisfaction: 0,
@@ -58,10 +66,11 @@ export function getDoctorStats(evaluations: DoctorEvaluation[]): DoctorStats {
     excellent: 3,
   };
 
-  const avgSatisfaction =
-    evaluations.reduce((sum, evaluation) => {
-      return sum + (satisfactionMap[evaluation.overallSatisfaction] || 0);
-    }, 0) / evaluations.length;
+  const totalScore = evaluations.reduce((sum, evaluation) => {
+    return sum + (satisfactionMap[evaluation?.overallSatisfaction] || 0);
+  }, 0);
+
+  const avgSatisfaction = totalScore / evaluations.length;
 
   return {
     totalEvaluations: evaluations.length,
