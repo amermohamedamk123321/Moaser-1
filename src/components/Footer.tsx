@@ -31,7 +31,7 @@ export default function Footer() {
               <img src={logo} alt="Moaser Dental Hospital" className="h-40 w-40 object-contain" />
             </div>
             <p className="font-heading text-lg font-bold text-center lg:text-left mb-3">{t("footer.brandName")}</p>
-            <p className="text-sm text-primary-foreground/70 leading-relaxed text-center lg:text-left">
+            <p className="text-sm text-primary-foreground/70 leading-relaxed text-center lg:text-right">
               {t("footer.brandDesc")}
             </p>
           </div>

@@ -12,6 +12,7 @@ import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
+import { addAppointment } from "@/lib/appointmentsStore";
 
 export default function AppointmentPage() {
   const { t } = useTranslation();
@@ -48,13 +49,40 @@ export default function AppointmentPage() {
   const setField = (key: string, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    toast({
-      title: t("appointment.toastTitle"),
-      description: t("appointment.toastDesc"),
-    });
+
+    try {
+      // Try to POST to API first (optional backend)
+      try {
+        const apiResponse = await fetch("/api/appointments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        if (apiResponse.ok) {
+          console.log("Appointment submitted to API");
+        }
+      } catch (apiError) {
+        console.log("API unavailable, using localStorage fallback");
+      }
+
+      // Always save to localStorage
+      addAppointment(form.name, form.phone, form.service, form.date, form.time, form.notes);
+
+      setSubmitted(true);
+      toast({
+        title: t("appointment.toastTitle"),
+        description: t("appointment.toastDesc"),
+      });
+    } catch (error) {
+      console.error("Error submitting appointment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit appointment. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Get tomorrow's date as min for date picker

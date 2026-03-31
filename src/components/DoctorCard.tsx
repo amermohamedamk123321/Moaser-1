@@ -1,22 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { Stethoscope } from "lucide-react";
 
-import doc1Img from "@/assets/doctors/doc1.jpg";
-import doc2Img from "@/assets/doctors/doc2.jpg";
-import doc3Img from "@/assets/doctors/doc3.jpg";
-import doc4Img from "@/assets/doctors/doc4.jpg";
-import doc5Img from "@/assets/doctors/doc5.jpg";
-import doc6Img from "@/assets/doctors/doc6.jpg";
-import doc7Img from "@/assets/doctors/doc7.jpg";
-
 const DOCTOR_IMAGES: Record<string, string> = {
-  doc1: doc1Img,
-  doc2: doc2Img,
-  doc3: doc3Img,
-  doc4: doc4Img,
-  doc5: doc5Img,
-  doc6: doc6Img,
-  doc7: doc7Img,
+  doc1: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F253e1b88f8254cc0981933d5ef0cfd41?format=webp&width=800&height=1200",
+  doc2: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F85d0dea973c54a02b7f4ff5dbac2dc3b?format=webp&width=800&height=1200",
+  doc3: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fb8206a1a6b0f43e9a860911f5b345e22?format=webp&width=800&height=1200",
+  doc4: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F95b1cba1cdbe4d2da9923f097f66808c?format=webp&width=800&height=1200",
+  doc5: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F73ab78914bf94396a1930fe1753d5eb8?format=webp&width=800&height=1200",
+  doc6: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fdf9d695054ef47549acb665460642bef?format=webp&width=800&height=1200",
+  doc7: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fa70a778c3ff449ea93b0d99e77e09e90?format=webp&width=800&height=1200",
 };
 
 interface DoctorCardProps {

@@ -84,13 +84,6 @@ export default function BeforeAfterSection() {
                   </svg>
                 </div>
               </div>
-              {/* Labels */}
-              <div className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm text-foreground text-xs font-semibold px-3 py-1 rounded-full z-20">
-                {t("home.before")}
-              </div>
-              <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full z-20">
-                {t("home.after")}
-              </div>
             </div>
 
 

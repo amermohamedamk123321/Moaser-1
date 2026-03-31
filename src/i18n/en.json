@@ -239,8 +239,18 @@
     "submit": "Submit Evaluation",
     "thankYou": "Thank You!",
     "thankYouDesc": "Your evaluation helps us maintain the highest standards of care.",
+    "submitAnother": "Submit Another",
+    "backHome": "Back Home",
     "toastTitle": "Thank you!",
     "toastDesc": "Your doctor evaluation has been submitted successfully."
+  },
+  "doctorsReport": {
+    "tag": "Doctors Report",
+    "title": "Doctor Evaluations",
+    "totalEvaluations": "Total evaluations",
+    "avgSatisfaction": "Avg satisfaction",
+    "noEvaluations": "No evaluations yet",
+    "evaluation": "Evaluation"
   },
   "admin": {
     "back": "Back",

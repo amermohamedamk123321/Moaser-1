@@ -51,9 +51,6 @@ export default function Navbar() {
           <img src={logo} alt="Moaser Specialized Dental Hospital" className="h-20 w-20 object-contain" />
           <div>
             <p className="font-heading text-[11px] sm:text-lg font-bold text-primary leading-tight">{t("nav.brandName")}</p>
-            {t("nav.brandSub") && (
-              <p className="text-xs text-muted-foreground">{t("nav.brandSub")}</p>
-            )}
           </div>
         </button>
 
