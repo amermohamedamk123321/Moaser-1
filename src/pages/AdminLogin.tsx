@@ -6,14 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Lock, Eye, EyeOff, AlertTriangle, ArrowLeft } from "lucide-react";
-import {
-  initAdmin,
-  verifyAdmin,
-  isLockedOut,
-  recordFailedAttempt,
-  resetLoginAttempts,
-} from "@/lib/beforeAfterStore";
+import { Eye, EyeOff, AlertTriangle, ArrowLeft } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import logo from "@/assets/logo.png";
 
@@ -21,6 +14,8 @@ const loginSchema = z.object({
   username: z.string().trim().min(1, "Username is required").max(50),
   password: z.string().min(1, "Password is required").max(100),
 });
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function AdminLogin() {
   const { t } = useTranslation();
@@ -30,36 +25,18 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [lockInfo, setLockInfo] = useState({ locked: false, remainingSeconds: 0 });
 
   useEffect(() => {
-    initAdmin();
     // Check if already logged in
-    if (sessionStorage.getItem("moaser_admin_session")) {
+    const token = localStorage.getItem("moaser_admin_token");
+    if (token) {
       navigate("/admin");
     }
   }, [navigate]);
 
-  // Lockout countdown
-  useEffect(() => {
-    if (!lockInfo.locked) return;
-    const interval = setInterval(() => {
-      const info = isLockedOut();
-      setLockInfo(info);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [lockInfo.locked]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    // Check lockout
-    const lock = isLockedOut();
-    if (lock.locked) {
-      setLockInfo(lock);
-      return;
-    }
 
     // Validate input
     const result = loginSchema.safeParse({ username, password });
@@ -69,25 +46,34 @@ export default function AdminLogin() {
     }
 
     setLoading(true);
-    // Add artificial delay to slow brute-force
-    await new Promise((r) => setTimeout(r, 800));
+    try {
+      const response = await fetch(`${API_URL}/api/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: result.data.username,
+          password: result.data.password,
+        }),
+      });
 
-    const valid = await verifyAdmin(result.data.username, result.data.password);
-    if (valid) {
-      resetLoginAttempts();
-      sessionStorage.setItem("moaser_admin_session", Date.now().toString());
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Invalid credentials");
+        return;
+      }
+
+      // Store token in localStorage
+      localStorage.setItem("moaser_admin_token", data.token);
+      localStorage.setItem("moaser_admin_user", JSON.stringify(data.user));
+
       navigate("/admin");
-    } else {
-      recordFailedAttempt();
-      const newLock = isLockedOut();
-      setLockInfo(newLock);
-      setError(
-        newLock.locked
-          ? t("admin.tooManyAttempts", { minutes: Math.ceil(newLock.remainingSeconds / 60) })
-          : t("admin.invalidCredentials")
-      );
+    } catch (err) {
+      setError("Failed to connect to server. Please check your connection.");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

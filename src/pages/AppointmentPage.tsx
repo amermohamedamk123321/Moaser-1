@@ -12,13 +12,15 @@ import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
-import { addAppointment } from "@/lib/appointmentsStore";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function AppointmentPage() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -51,15 +53,49 @@ export default function AppointmentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
-    // Save appointment to localStorage
-    addAppointment(form.name, form.phone, form.service, form.date, form.time, form.notes);
+    try {
+      const response = await fetch(`${API_URL}/api/appointments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          service: form.service,
+          date: form.date,
+          time: form.time,
+          notes: form.notes,
+        }),
+      });
 
-    setSubmitted(true);
-    toast({
-      title: t("appointment.toastTitle"),
-      description: t("appointment.toastDesc"),
-    });
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to submit appointment",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      setSubmitted(true);
+      toast({
+        title: t("appointment.toastTitle"),
+        description: t("appointment.toastDesc"),
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit appointment. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Error submitting appointment:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Get tomorrow's date as min for date picker
@@ -225,8 +261,8 @@ export default function AppointmentPage() {
                       />
                     </div>
 
-                    <Button type="submit" size="lg" className="w-full">
-                      {t("appointment.submitBtn")}
+                    <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                      {loading ? "Submitting..." : t("appointment.submitBtn")}
                     </Button>
                   </form>
                 )}
