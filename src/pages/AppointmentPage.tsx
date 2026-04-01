@@ -52,37 +52,14 @@ export default function AppointmentPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      // Try to POST to API first (optional backend)
-      try {
-        const apiResponse = await fetch("/api/appointments", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-        if (apiResponse.ok) {
-          console.log("Appointment submitted to API");
-        }
-      } catch (apiError) {
-        console.log("API unavailable, using localStorage fallback");
-      }
+    // Save appointment to localStorage
+    addAppointment(form.name, form.phone, form.service, form.date, form.time, form.notes);
 
-      // Always save to localStorage
-      addAppointment(form.name, form.phone, form.service, form.date, form.time, form.notes);
-
-      setSubmitted(true);
-      toast({
-        title: t("appointment.toastTitle"),
-        description: t("appointment.toastDesc"),
-      });
-    } catch (error) {
-      console.error("Error submitting appointment:", error);
-      toast({
-        title: "Error",
-        description: "Failed to submit appointment. Please try again.",
-        variant: "destructive",
-      });
-    }
+    setSubmitted(true);
+    toast({
+      title: t("appointment.toastTitle"),
+      description: t("appointment.toastDesc"),
+    });
   };
 
   // Get tomorrow's date as min for date picker

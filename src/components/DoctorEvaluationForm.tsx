@@ -59,39 +59,17 @@ export default function DoctorEvaluationForm() {
       return;
     }
 
-    try {
-      // Try to submit to backend API (via proxy in dev, or direct URL in production)
-      try {
-        const response = await fetch("/api/evaluations", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(survey),
-        });
+    // Save evaluation to localStorage
+    const evaluations = JSON.parse(localStorage.getItem("moaser_evaluations") || "[]");
+    evaluations.push({
+      ...survey,
+      id: Date.now(),
+      createdAt: new Date().toISOString(),
+    });
+    localStorage.setItem("moaser_evaluations", JSON.stringify(evaluations));
 
-        if (response.ok) {
-          console.log("Evaluation submitted to backend");
-        }
-      } catch (apiError) {
-        console.warn("Backend API unavailable, storing locally:", apiError);
-      }
-
-      // Always save to localStorage as fallback
-      const evaluations = JSON.parse(localStorage.getItem("moaser_evaluations") || "[]");
-      evaluations.push({
-        ...survey,
-        id: Date.now(),
-        createdAt: new Date().toISOString(),
-      });
-      localStorage.setItem("moaser_evaluations", JSON.stringify(evaluations));
-
-      setSubmitted(true);
-      toast({ title: t("doctorEval.toastTitle"), description: t("doctorEval.toastDesc") });
-    } catch (error) {
-      console.error("Error submitting evaluation:", error);
-      toast({ title: "Error", description: "Failed to submit evaluation. Please try again.", variant: "destructive" });
-    }
+    setSubmitted(true);
+    toast({ title: t("doctorEval.toastTitle"), description: t("doctorEval.toastDesc") });
   };
 
   const handleSubmitAnother = () => {
