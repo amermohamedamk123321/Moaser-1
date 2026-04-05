@@ -48,8 +48,23 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Initialize database
-initializeDatabase();
+// Initialize database (async)
+let dbReady = false;
+initializeDatabase().then(() => {
+  dbReady = true;
+  console.log("Database ready");
+}).catch(err => {
+  console.error("Failed to initialize database:", err);
+  process.exit(1);
+});
+
+// Middleware to check database readiness
+app.use((req, res, next) => {
+  if (!dbReady && req.path !== '/health') {
+    return res.status(503).json({ error: "Database initializing" });
+  }
+  next();
+});
 
 // ===== HEALTH CHECK =====
 app.get("/health", (req, res) => {

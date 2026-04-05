@@ -1,4 +1,5 @@
-import sqlite3 from "sqlite3";
+import initSqlJs from "sql.js";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -6,22 +7,45 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.join(__dirname, "evaluations.db");
 
 let db;
+let SQL;
+let initialized = false;
 
 // Initialize database connection
-function initializeDatabase() {
-  db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-      console.error("Error opening database:", err);
+async function initializeDatabase() {
+  try {
+    SQL = await initSqlJs();
+    
+    // Load existing database file if it exists
+    if (fs.existsSync(dbPath)) {
+      const buffer = fs.readFileSync(dbPath);
+      db = new SQL.Database(buffer);
+      console.log("Connected to existing SQLite database");
     } else {
-      console.log("Connected to SQLite database");
-      createTables();
+      db = new SQL.Database();
+      console.log("Created new SQLite database");
     }
-  });
+    
+    createTables();
+    initialized = true;
+  } catch (err) {
+    console.error("Error initializing database:", err);
+    throw err;
+  }
+}
+
+// Save database to file
+function saveDatabase() {
+  try {
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(dbPath, buffer);
+  } catch (err) {
+    console.error("Error saving database:", err);
+  }
 }
 
 // Create all tables if they don't exist
 function createTables() {
-  // Admin users table
   const adminTableSql = `
     CREATE TABLE IF NOT EXISTS admin_users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,7 +58,6 @@ function createTables() {
     )
   `;
 
-  // Appointments table
   const appointmentsTableSql = `
     CREATE TABLE IF NOT EXISTS appointments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,7 +73,6 @@ function createTables() {
     )
   `;
 
-  // Doctor evaluations table
   const evaluationsTableSql = `
     CREATE TABLE IF NOT EXISTS doctor_evaluations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,111 +89,104 @@ function createTables() {
     )
   `;
 
-  db.run(adminTableSql, (err) => {
-    if (err) {
-      console.error("Error creating admin_users table:", err);
-    } else {
-      console.log("admin_users table ensured");
-    }
-  });
+  try {
+    db.run(adminTableSql);
+    db.run(appointmentsTableSql);
+    db.run(evaluationsTableSql);
+    saveDatabase();
+    console.log("Database tables ensured");
+  } catch (err) {
+    console.error("Error creating tables:", err);
+  }
+}
 
-  db.run(appointmentsTableSql, (err) => {
-    if (err) {
-      console.error("Error creating appointments table:", err);
-    } else {
-      console.log("appointments table ensured");
-    }
-  });
-
-  db.run(evaluationsTableSql, (err) => {
-    if (err) {
-      console.error("Error creating doctor_evaluations table:", err);
-    } else {
-      console.log("doctor_evaluations table ensured");
-    }
-  });
+// Helper function to get results as array of objects
+function getResults(stmt) {
+  const results = [];
+  while (stmt.step()) {
+    results.push(stmt.getAsObject());
+  }
+  stmt.free();
+  return results;
 }
 
 // ===== ADMIN USER FUNCTIONS =====
 
 function getAdminUserByUsername(username) {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM admin_users WHERE username = ? AND isActive = 1";
-    db.get(sql, [username], (err, row) => {
-      if (err) {
-        console.error("Error fetching admin user:", err);
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+  try {
+    const stmt = db.prepare("SELECT * FROM admin_users WHERE username = ? AND isActive = 1");
+    stmt.bind([username]);
+    const results = getResults(stmt);
+    return results.length > 0 ? results[0] : null;
+  } catch (err) {
+    console.error("Error fetching admin user:", err);
+    return null;
+  }
 }
 
 function createAdminUser(username, passwordHash, email = null) {
-  return new Promise((resolve, reject) => {
-    const sql = `
+  try {
+    const stmt = db.prepare(`
       INSERT INTO admin_users (username, passwordHash, email)
       VALUES (?, ?, ?)
-    `;
-    db.run(sql, [username, passwordHash, email], function (err) {
-      if (err) {
-        console.error("Error creating admin user:", err);
-        reject(err);
-      } else {
-        resolve({ id: this.lastID, username, email });
-      }
-    });
-  });
+    `);
+    stmt.bind([username, passwordHash, email]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { id: 1, username, email };
+  } catch (err) {
+    console.error("Error creating admin user:", err);
+    throw err;
+  }
 }
 
 function updateAdminPassword(userId, passwordHash) {
-  return new Promise((resolve, reject) => {
-    const sql = `
+  try {
+    const stmt = db.prepare(`
       UPDATE admin_users 
       SET passwordHash = ?, updatedAt = CURRENT_TIMESTAMP
       WHERE id = ?
-    `;
-    db.run(sql, [passwordHash, userId], function (err) {
-      if (err) {
-        console.error("Error updating admin password:", err);
-        reject(err);
-      } else {
-        resolve({ success: true });
-      }
-    });
-  });
+    `);
+    stmt.bind([passwordHash, userId]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { success: true };
+  } catch (err) {
+    console.error("Error updating admin password:", err);
+    throw err;
+  }
 }
 
 // ===== APPOINTMENTS FUNCTIONS =====
 
 function createAppointment(appointmentData) {
-  return new Promise((resolve, reject) => {
-    const sql = `
+  try {
+    const stmt = db.prepare(`
       INSERT INTO appointments (name, phone, service, date, time, notes, status)
       VALUES (?, ?, ?, ?, ?, ?, 'pending')
-    `;
-    const params = [
+    `);
+    stmt.bind([
       appointmentData.name,
       appointmentData.phone,
       appointmentData.service,
       appointmentData.date,
       appointmentData.time,
       appointmentData.notes || ""
-    ];
-    db.run(sql, params, function (err) {
-      if (err) {
-        console.error("Error creating appointment:", err);
-        reject(err);
-      } else {
-        resolve({ id: this.lastID, ...appointmentData });
-      }
-    });
-  });
+    ]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return appointmentData;
+  } catch (err) {
+    console.error("Error creating appointment:", err);
+    throw err;
+  }
 }
 
 function getAllAppointments(page = 1, limit = 20, status = null) {
-  return new Promise((resolve, reject) => {
+  try {
     let sql = "SELECT * FROM appointments";
     const params = [];
 
@@ -186,33 +201,30 @@ function getAllAppointments(page = 1, limit = 20, status = null) {
     sql += " LIMIT ? OFFSET ?";
     params.push(limit, offset);
 
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        console.error("Error fetching appointments:", err);
-        reject(err);
-      } else {
-        resolve(rows || []);
-      }
-    });
-  });
+    const stmt = db.prepare(sql);
+    stmt.bind(params);
+    const results = getResults(stmt);
+    return results;
+  } catch (err) {
+    console.error("Error fetching appointments:", err);
+    return [];
+  }
 }
 
 function getAppointmentById(id) {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM appointments WHERE id = ?";
-    db.get(sql, [id], (err, row) => {
-      if (err) {
-        console.error("Error fetching appointment:", err);
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+  try {
+    const stmt = db.prepare("SELECT * FROM appointments WHERE id = ?");
+    stmt.bind([id]);
+    const results = getResults(stmt);
+    return results.length > 0 ? results[0] : null;
+  } catch (err) {
+    console.error("Error fetching appointment:", err);
+    return null;
+  }
 }
 
 function updateAppointment(id, updates) {
-  return new Promise((resolve, reject) => {
+  try {
     const allowedFields = ['status', 'notes', 'date', 'time'];
     const fields = [];
     const values = [];
@@ -225,39 +237,40 @@ function updateAppointment(id, updates) {
     }
 
     if (fields.length === 0) {
-      return resolve({ success: false, message: "No valid fields to update" });
+      return { success: false, message: "No valid fields to update" };
     }
 
     values.push(id);
     const sql = `UPDATE appointments SET ${fields.join(', ')}, updatedAt = CURRENT_TIMESTAMP WHERE id = ?`;
-
-    db.run(sql, values, function (err) {
-      if (err) {
-        console.error("Error updating appointment:", err);
-        reject(err);
-      } else {
-        resolve({ success: true, changes: this.changes });
-      }
-    });
-  });
+    
+    const stmt = db.prepare(sql);
+    stmt.bind(values);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { success: true, changes: 1 };
+  } catch (err) {
+    console.error("Error updating appointment:", err);
+    throw err;
+  }
 }
 
 function deleteAppointment(id) {
-  return new Promise((resolve, reject) => {
-    const sql = "DELETE FROM appointments WHERE id = ?";
-    db.run(sql, [id], function (err) {
-      if (err) {
-        console.error("Error deleting appointment:", err);
-        reject(err);
-      } else {
-        resolve({ success: true, changes: this.changes });
-      }
-    });
-  });
+  try {
+    const stmt = db.prepare("DELETE FROM appointments WHERE id = ?");
+    stmt.bind([id]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { success: true, changes: 1 };
+  } catch (err) {
+    console.error("Error deleting appointment:", err);
+    throw err;
+  }
 }
 
 function getAppointmentStats() {
-  return new Promise((resolve, reject) => {
+  try {
     const sql = `
       SELECT 
         COUNT(*) as totalAppointments,
@@ -266,26 +279,26 @@ function getAppointmentStats() {
         SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completedAppointments
       FROM appointments
     `;
-    db.get(sql, (err, row) => {
-      if (err) {
-        console.error("Error fetching appointment stats:", err);
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+    const stmt = db.prepare(sql);
+    stmt.step();
+    const row = stmt.getAsObject();
+    stmt.free();
+    return row;
+  } catch (err) {
+    console.error("Error fetching appointment stats:", err);
+    return { totalAppointments: 0, pendingAppointments: 0, confirmedAppointments: 0, completedAppointments: 0 };
+  }
 }
 
 // ===== DOCTOR EVALUATIONS FUNCTIONS =====
 
 function insertEvaluation(evaluation) {
-  return new Promise((resolve, reject) => {
-    const sql = `
+  try {
+    const stmt = db.prepare(`
       INSERT INTO doctor_evaluations (docKey, behavior, competence, treatmentQuality, explanation, followUp, overallSatisfaction, comments)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    const params = [
+    `);
+    stmt.bind([
       evaluation.docKey,
       evaluation.behavior,
       evaluation.competence,
@@ -294,78 +307,73 @@ function insertEvaluation(evaluation) {
       evaluation.followUp,
       evaluation.overallSatisfaction,
       evaluation.comments || ""
-    ];
-    db.run(sql, params, function (err) {
-      if (err) {
-        console.error("Error inserting evaluation:", err);
-        reject(err);
-      } else {
-        resolve({ id: this.lastID, ...evaluation });
-      }
-    });
-  });
+    ]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return evaluation;
+  } catch (err) {
+    console.error("Error inserting evaluation:", err);
+    throw err;
+  }
 }
 
 function getAllEvaluations(page = 1, limit = 50) {
-  return new Promise((resolve, reject) => {
+  try {
     const offset = (page - 1) * limit;
     const sql = "SELECT * FROM doctor_evaluations ORDER BY createdAt DESC LIMIT ? OFFSET ?";
-    db.all(sql, [limit, offset], (err, rows) => {
-      if (err) {
-        console.error("Error fetching evaluations:", err);
-        reject(err);
-      } else {
-        resolve(rows || []);
-      }
-    });
-  });
+    const stmt = db.prepare(sql);
+    stmt.bind([limit, offset]);
+    const results = getResults(stmt);
+    return results;
+  } catch (err) {
+    console.error("Error fetching evaluations:", err);
+    return [];
+  }
 }
 
 function getEvaluationsByDoctor(docKey, page = 1, limit = 50) {
-  return new Promise((resolve, reject) => {
+  try {
     const offset = (page - 1) * limit;
     const sql = "SELECT * FROM doctor_evaluations WHERE docKey = ? ORDER BY createdAt DESC LIMIT ? OFFSET ?";
-    db.all(sql, [docKey, limit, offset], (err, rows) => {
-      if (err) {
-        console.error("Error fetching evaluations for doctor:", err);
-        reject(err);
-      } else {
-        resolve(rows || []);
-      }
-    });
-  });
+    const stmt = db.prepare(sql);
+    stmt.bind([docKey, limit, offset]);
+    const results = getResults(stmt);
+    return results;
+  } catch (err) {
+    console.error("Error fetching evaluations for doctor:", err);
+    return [];
+  }
 }
 
 function getEvaluationById(id) {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM doctor_evaluations WHERE id = ?";
-    db.get(sql, [id], (err, row) => {
-      if (err) {
-        console.error("Error fetching evaluation:", err);
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+  try {
+    const stmt = db.prepare("SELECT * FROM doctor_evaluations WHERE id = ?");
+    stmt.bind([id]);
+    const results = getResults(stmt);
+    return results.length > 0 ? results[0] : null;
+  } catch (err) {
+    console.error("Error fetching evaluation:", err);
+    return null;
+  }
 }
 
 function deleteEvaluation(id) {
-  return new Promise((resolve, reject) => {
-    const sql = "DELETE FROM doctor_evaluations WHERE id = ?";
-    db.run(sql, [id], function (err) {
-      if (err) {
-        console.error("Error deleting evaluation:", err);
-        reject(err);
-      } else {
-        resolve({ success: true, changes: this.changes });
-      }
-    });
-  });
+  try {
+    const stmt = db.prepare("DELETE FROM doctor_evaluations WHERE id = ?");
+    stmt.bind([id]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { success: true, changes: 1 };
+  } catch (err) {
+    console.error("Error deleting evaluation:", err);
+    throw err;
+  }
 }
 
 function getEvaluationStats() {
-  return new Promise((resolve, reject) => {
+  try {
     const sql = `
       SELECT 
         COUNT(*) as totalEvaluations,
@@ -374,15 +382,15 @@ function getEvaluationStats() {
                  ELSE 1 END) as averageSatisfaction
       FROM doctor_evaluations
     `;
-    db.get(sql, (err, row) => {
-      if (err) {
-        console.error("Error fetching evaluation stats:", err);
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+    const stmt = db.prepare(sql);
+    stmt.step();
+    const row = stmt.getAsObject();
+    stmt.free();
+    return row;
+  } catch (err) {
+    console.error("Error fetching evaluation stats:", err);
+    return { totalEvaluations: 0, averageSatisfaction: 0 };
+  }
 }
 
 export {
