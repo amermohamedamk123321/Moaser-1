@@ -13,8 +13,6 @@ import {
   getBeforeAfterImages,
   addBeforeAfterImage,
   removeBeforeAfterImage,
-  updateAdminCredentials,
-  getAdminUsername,
   BeforeAfterImage,
 } from "@/lib/beforeAfterStore";
 import PageTransition from "@/components/PageTransition";
@@ -23,10 +21,10 @@ import AppointmentsList from "@/components/AppointmentsList";
 import logo from "@/assets/logo.png";
 
 const credSchema = z.object({
-  username: z.string().trim().min(3, "Min 3 characters").max(50),
-  password: z.string().min(6, "Min 6 characters").max(100),
+  oldPassword: z.string().min(6, "Min 6 characters").max(100),
+  newPassword: z.string().min(6, "Min 6 characters").max(100),
   confirmPassword: z.string(),
-}).refine((d) => d.password === d.confirmPassword, {
+}).refine((d) => d.newPassword === d.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
@@ -37,16 +35,21 @@ const imageSchema = z.object({
   category: z.string().trim().min(1, "Required").max(50),
 });
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [images, setImages] = useState<BeforeAfterImage[]>([]);
+  const [adminUser, setAdminUser] = useState<{ id: number; username: string; email: string } | null>(null);
 
   // Credential form
-  const [credUsername, setCredUsername] = useState("");
-  const [credPassword, setCredPassword] = useState("");
+  const [credOldPassword, setCredOldPassword] = useState("");
+  const [credNewPassword, setCredNewPassword] = useState("");
   const [credConfirm, setCredConfirm] = useState("");
   const [credError, setCredError] = useState("");
-  const [showCredPassword, setShowCredPassword] = useState(false);
+  const [credLoading, setCredLoading] = useState(false);
+  const [showCredOldPassword, setShowCredOldPassword] = useState(false);
+  const [showCredNewPassword, setShowCredNewPassword] = useState(false);
   const [showCredConfirm, setShowCredConfirm] = useState(false);
 
   // Image form
@@ -58,31 +61,83 @@ export default function AdminDashboard() {
   const [imgError, setImgError] = useState("");
 
   useEffect(() => {
-    if (!sessionStorage.getItem("moaser_admin_session")) {
+    const token = localStorage.getItem("moaser_admin_token");
+    const user = localStorage.getItem("moaser_admin_user");
+
+    if (!token || !user) {
       navigate("/admin/login");
       return;
     }
+
+    setAdminUser(JSON.parse(user));
     setImages(getBeforeAfterImages());
-    setCredUsername(getAdminUsername());
   }, [navigate]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("moaser_admin_session");
-    navigate("/admin/login");
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("moaser_admin_token");
+      await fetch(`${API_URL}/api/admin/logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      localStorage.removeItem("moaser_admin_token");
+      localStorage.removeItem("moaser_admin_user");
+      navigate("/admin/login");
+    }
   };
 
   const handleCredUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setCredError("");
-    const result = credSchema.safeParse({ username: credUsername, password: credPassword, confirmPassword: credConfirm });
+
+    const result = credSchema.safeParse({
+      oldPassword: credOldPassword,
+      newPassword: credNewPassword,
+      confirmPassword: credConfirm
+    });
+
     if (!result.success) {
       setCredError(result.error.errors[0].message);
       return;
     }
-    await updateAdminCredentials(result.data.username, result.data.password);
-    setCredPassword("");
-    setCredConfirm("");
-    toast({ title: "Credentials updated", description: "Your admin credentials have been changed." });
+
+    setCredLoading(true);
+    try {
+      const token = localStorage.getItem("moaser_admin_token");
+      const response = await fetch(`${API_URL}/api/admin/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          oldPassword: result.data.oldPassword,
+          newPassword: result.data.newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setCredError(data.error || "Failed to change password");
+        return;
+      }
+
+      setCredOldPassword("");
+      setCredNewPassword("");
+      setCredConfirm("");
+      toast({ title: "Success", description: "Password changed successfully" });
+    } catch (err) {
+      setCredError("Failed to connect to server");
+      console.error("Change password error:", err);
+    } finally {
+      setCredLoading(false);
+    }
   };
 
   const handleFileToBase64 = (file: File): Promise<string> => {
@@ -136,7 +191,10 @@ export default function AdminDashboard() {
           <div className="container mx-auto flex items-center justify-between px-4 py-3 sm:py-4">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <img src={logo} alt="Moaser Dental Hospital" className="h-8 w-8 sm:h-9 sm:w-9 object-contain shrink-0" />
-              <h1 className="font-heading text-base sm:text-xl font-bold text-foreground truncate">Admin Dashboard</h1>
+              <div className="min-w-0">
+                <h1 className="font-heading text-base sm:text-xl font-bold text-foreground truncate">Admin Dashboard</h1>
+                {adminUser && <p className="text-xs sm:text-sm text-muted-foreground truncate">Welcome, {adminUser.username}</p>}
+              </div>
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout} className="shrink-0">
               <LogOut className="w-4 h-4 sm:ltr:mr-2 sm:rtl:ml-2" /> <span className="hidden sm:inline">Logout</span>
@@ -294,35 +352,72 @@ export default function AdminDashboard() {
             <TabsContent value="credentials">
               <Card className="max-w-lg">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg"><Shield className="w-5 h-5" /> Change Credentials</CardTitle>
-                  <CardDescription>Update your admin username and password.</CardDescription>
+                  <CardTitle className="flex items-center gap-2 text-lg"><Shield className="w-5 h-5" /> Change Password</CardTitle>
+                  <CardDescription>Update your admin password.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleCredUpdate} className="space-y-4">
                     <div className="space-y-2">
-                      <Label>Username</Label>
-                      <Input value={credUsername} onChange={(e) => setCredUsername(e.target.value)} maxLength={50} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>New Password</Label>
+                      <Label>Current Password</Label>
                       <div className="relative">
-                        <Input type={showCredPassword ? "text" : "password"} value={credPassword} onChange={(e) => setCredPassword(e.target.value)} maxLength={100} />
-                        <button type="button" onClick={() => setShowCredPassword(!showCredPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                          {showCredPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        <Input
+                          type={showCredOldPassword ? "text" : "password"}
+                          value={credOldPassword}
+                          onChange={(e) => setCredOldPassword(e.target.value)}
+                          maxLength={100}
+                          disabled={credLoading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCredOldPassword(!showCredOldPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          {showCredOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label>Confirm Password</Label>
+                      <Label>New Password</Label>
                       <div className="relative">
-                        <Input type={showCredConfirm ? "text" : "password"} value={credConfirm} onChange={(e) => setCredConfirm(e.target.value)} maxLength={100} />
-                        <button type="button" onClick={() => setShowCredConfirm(!showCredConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                        <Input
+                          type={showCredNewPassword ? "text" : "password"}
+                          value={credNewPassword}
+                          onChange={(e) => setCredNewPassword(e.target.value)}
+                          maxLength={100}
+                          disabled={credLoading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCredNewPassword(!showCredNewPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          {showCredNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Confirm New Password</Label>
+                      <div className="relative">
+                        <Input
+                          type={showCredConfirm ? "text" : "password"}
+                          value={credConfirm}
+                          onChange={(e) => setCredConfirm(e.target.value)}
+                          maxLength={100}
+                          disabled={credLoading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCredConfirm(!showCredConfirm)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
                           {showCredConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
                     </div>
                     {credError && <p className="text-sm text-destructive">{credError}</p>}
-                    <Button type="submit">Update Credentials</Button>
+                    <Button type="submit" disabled={credLoading}>
+                      {credLoading ? "Updating..." : "Update Password"}
+                    </Button>
                   </form>
                 </CardContent>
               </Card>

@@ -17,29 +17,7 @@ interface DoctorStats {
 }
 
 export async function getDoctorEvaluations(docKey?: string): Promise<DoctorEvaluation[]> {
-  const adminSession = sessionStorage.getItem("moaser_admin_session");
-  if (!adminSession) {
-    console.warn("Not authenticated");
-    return [];
-  }
-
-  try {
-    // Try to fetch from backend API (via proxy in dev)
-    const params = new URLSearchParams({ adminSession });
-    if (docKey) {
-      params.append("docKey", docKey);
-    }
-
-    const response = await fetch(`/api/evaluations?${params.toString()}`);
-    if (response.ok) {
-      const data = await response.json();
-      return data.evaluations || [];
-    }
-  } catch (error) {
-    console.warn("Backend API unavailable, falling back to localStorage:", error);
-  }
-
-  // Fallback to localStorage
+  // Use localStorage for evaluations storage
   try {
     const storedEvaluations = JSON.parse(localStorage.getItem("moaser_evaluations") || "[]");
     if (docKey) {

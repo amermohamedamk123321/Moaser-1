@@ -32,11 +32,14 @@ const surveyKeys: { key: keyof Omit<DoctorSurveyData, "selectedDoctor" | "commen
   { key: "overallSatisfaction", qKey: "dq6" },
 ];
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function DoctorEvaluationForm() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [survey, setSurvey] = useState<DoctorSurveyData>({
     selectedDoctor: "",
     behavior: "",
@@ -59,38 +62,46 @@ export default function DoctorEvaluationForm() {
       return;
     }
 
+    setLoading(true);
     try {
-      // Try to submit to backend API (via proxy in dev, or direct URL in production)
-      try {
-        const response = await fetch("/api/evaluations", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(survey),
-        });
-
-        if (response.ok) {
-          console.log("Evaluation submitted to backend");
-        }
-      } catch (apiError) {
-        console.warn("Backend API unavailable, storing locally:", apiError);
-      }
-
-      // Always save to localStorage as fallback
-      const evaluations = JSON.parse(localStorage.getItem("moaser_evaluations") || "[]");
-      evaluations.push({
-        ...survey,
-        id: Date.now(),
-        createdAt: new Date().toISOString(),
+      const response = await fetch(`${API_URL}/api/evaluations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          docKey: survey.selectedDoctor,
+          behavior: survey.behavior,
+          competence: survey.competence,
+          treatmentQuality: survey.treatmentQuality,
+          explanation: survey.explanation,
+          followUp: survey.followUp,
+          overallSatisfaction: survey.overallSatisfaction,
+          comments: survey.comments,
+        }),
       });
-      localStorage.setItem("moaser_evaluations", JSON.stringify(evaluations));
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to submit evaluation",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
 
       setSubmitted(true);
       toast({ title: t("doctorEval.toastTitle"), description: t("doctorEval.toastDesc") });
     } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit evaluation. Please try again.",
+        variant: "destructive",
+      });
       console.error("Error submitting evaluation:", error);
-      toast({ title: "Error", description: "Failed to submit evaluation. Please try again.", variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -225,9 +236,9 @@ export default function DoctorEvaluationForm() {
                     />
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full">
+                  <Button type="submit" size="lg" className="w-full" disabled={loading}>
                     <Send className="h-4 w-4" />
-                    {t("doctorEval.submit")}
+                    {loading ? "Submitting..." : t("doctorEval.submit")}
                   </Button>
                 </form>
               )}
