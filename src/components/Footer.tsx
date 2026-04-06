@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Phone, MapPin, Facebook, Instagram, MessageCircle, Settings } from "lucide-react";
+import { Phone, MapPin, Facebook, Instagram, Settings } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const footerLinks = [
@@ -73,14 +73,11 @@ export default function Footer() {
                 <span>{t("contact.address")}</span>
               </div>
               <div className="flex gap-2 pt-1">
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
+                <a href="https://www.facebook.com/dr.sharafyar?mibextid=rS40aB7S9Ucbxw6v" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
                   <Facebook className="h-4 w-4" />
                 </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
+                <a href="https://www.instagram.com/moaser_dental_hospital?igsh=MTI2eWRjZG15eDd0bg==" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
                   <Instagram className="h-4 w-4" />
-                </a>
-                <a href="https://wa.me/93780103030" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
-                  <MessageCircle className="h-4 w-4" />
                 </a>
               </div>
             </div>
