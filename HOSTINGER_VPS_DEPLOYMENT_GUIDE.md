@@ -5,10 +5,10 @@
 This guide walks you through deploying the Moaser Dental Clinic application on a Hostinger VPS with Ubuntu and CloudPanel.
 
 **Deployment Architecture:**
-- Frontend (React/Vite): Port 8081 (served via Nginx)
-- Backend (Node.js/Express): Port 5000 (internal, behind reverse proxy)
+- Frontend (React/Vite): Ports 80/443 (served via Nginx reverse proxy, SSL enabled)
+- Backend (Node.js/Express): Port 5000 (internal, behind Nginx reverse proxy)
 - Database: SQLite (file-based, in `/root/moaser-clinic/server/`)
-- Domain: yourdomain.com (configured in CloudPanel)
+- Domain: yourdomain.com (configured in CloudPanel with SSL via Let's Encrypt)
 
 ---
 
@@ -169,9 +169,9 @@ pm2 logs moaser-clinic
 1. **Login to CloudPanel** (usually https://your-vps-ip:8443)
 2. Go to **Websites** → **Add Website**
 3. Enter your domain name
-4. Select **Node.js** as application type
-5. Set Application Port: `8081` (frontend static files)
-6. Create the website
+4. Select **Custom** or **Node.js** as application type
+5. Set to serve static files from: `/root/moaser-clinic/dist/` on ports 80/443
+6. Create the website and enable SSL
 
 ### Option B: Manual Nginx Configuration
 

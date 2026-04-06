@@ -5,9 +5,16 @@ This guide is optimized for Hostinger VPS with CloudPanel installed.
 
 ## Port Configuration
 
-- **Backend (Node.js)**: Port 5000 (internal, behind Nginx proxy)
-- **Frontend (Nginx)**: Port 8081 (standard web traffic via Nginx reverse proxy)
-- **CloudPanel Dashboard**: Port 8443 (https://your-vps-ip:8443)
+| Service | Port(s) | Description |
+|---------|---------|-------------|
+| **Backend (Node.js)** | 5000 | Internal only, behind Nginx reverse proxy |
+| **Frontend (Nginx)** | 80/443 | Public web traffic (HTTP/HTTPS via SSL) |
+| **CloudPanel Dashboard** | 8443 | Admin panel (https://your-vps-ip:8443) |
+
+**Note on Ports:**
+- **Production**: Frontend serves on standard ports 80 (HTTP) and 443 (HTTPS) via Nginx
+- **Development**: Frontend Vite dev server uses port 8080 (localhost only)
+- **Port 8081**: Not used in this deployment
 
 ---
 
@@ -32,10 +39,11 @@ npm rebuild
 cp .env.hostinger .env
 nano .env
 
-# Update:
+# Required updates:
 # - yourdomain.com → your actual domain
-# - JWT_SECRET → run: openssl rand -base64 32
-# - ADMIN_PASSWORD → strong password
+# - JWT_SECRET → run: openssl rand -base64 32 (copy output here)
+# - ADMIN_PASSWORD → strong password (min 12 chars, mix of upper/lower/numbers/symbols)
+# - ADMIN_EMAIL → your email address
 ```
 
 ### 4. Deploy
