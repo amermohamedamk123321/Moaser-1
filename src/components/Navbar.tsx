@@ -42,13 +42,13 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-card/95 backdrop-blur-xl shadow-card py-2 lg:py-3 border-b border-border"
-          : "bg-card/80 backdrop-blur-md py-2 lg:py-5"
+          ? "bg-card/95 backdrop-blur-xl shadow-card py-2 lg:py-2 border-b border-border"
+          : "bg-card/80 backdrop-blur-md py-2 lg:py-3"
       }`}
     >
       <div className="container mx-auto flex items-center justify-between px-4">
         <button onClick={() => goTo("/")} className="flex items-center gap-3">
-          <img src={logo} alt="Moaser Specialized Dental Hospital" className="h-20 w-20 lg:h-32 lg:w-32 object-contain" />
+          <img src={logo} alt="Moaser Specialized Dental Hospital" className="h-20 w-20 lg:h-28 lg:w-28 object-contain" />
           <div>
             <p className="font-heading text-[11px] sm:text-lg font-bold text-primary leading-tight">{t("nav.brandName")}</p>
           </div>
