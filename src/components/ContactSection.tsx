@@ -90,7 +90,7 @@ export default function ContactSection() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">{t("contact.phoneLabel")}</p>
-                      <p className="font-semibold text-foreground" dir="ltr">0780 103 030</p>
+                      <p className="font-semibold text-foreground" dir="ltr">0780 10 30 30</p>
                     </div>
                   </a>
                   <div className="flex items-start gap-4">
