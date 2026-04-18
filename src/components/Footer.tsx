@@ -28,7 +28,7 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col items-center lg:items-start">
             <div className="bg-primary-foreground rounded-xl p-3 mb-4">
-              <img src={logo} alt="Moaser Dental Hospital" className="h-48 w-48 object-contain" />
+              <img src={logo} alt="Moaser Dental Hospital" className="h-56 w-56 object-contain" />
             </div>
             <p className="font-heading text-lg font-bold text-center lg:text-left mb-3">{t("footer.brandName")}</p>
             <p className="text-sm text-primary-foreground/70 leading-relaxed text-center lg:text-right">
