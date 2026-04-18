@@ -48,7 +48,7 @@ export default function Navbar() {
     >
       <div className="container mx-auto flex items-center justify-between px-4">
         <button onClick={() => goTo("/")} className="flex items-center gap-3">
-          <img src={logo} alt="Moaser Specialized Dental Hospital" className="h-20 w-20 object-contain" />
+          <img src={logo} alt="Moaser Specialized Dental Hospital" className="h-24 w-24 object-contain" />
           <div>
             <p className="font-heading text-[11px] sm:text-lg font-bold text-primary leading-tight">{t("nav.brandName")}</p>
           </div>
