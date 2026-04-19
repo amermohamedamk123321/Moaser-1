@@ -27,8 +27,8 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col items-center lg:items-start">
-            <div className="bg-primary-foreground rounded-xl p-1 mb-4">
-              <img src={logo} alt="Moaser Dental Hospital" className="h-64 w-64 object-contain" />
+            <div className="bg-primary-foreground rounded-lg p-0.5 mb-4">
+              <img src={logo} alt="Moaser Dental Hospital" className="h-40 w-40 lg:h-56 lg:w-56 object-contain" />
             </div>
             <p className="font-heading text-lg font-bold text-center lg:text-left mb-3">{t("footer.brandName")}</p>
             <p className="text-sm text-primary-foreground/70 leading-relaxed text-center lg:text-right">
@@ -66,7 +66,7 @@ export default function Footer() {
             <div className="space-y-3 text-sm text-primary-foreground/70">
               <a href="tel:0780103030" className="flex items-center gap-2 hover:text-primary-foreground transition-colors" dir="ltr">
                 <Phone className="h-4 w-4" />
-                <span dir="ltr">0780 103 030</span>
+                <span dir="ltr">0780 10 30 30</span>
               </a>
               <div className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
