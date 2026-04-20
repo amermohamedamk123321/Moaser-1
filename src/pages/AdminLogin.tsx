@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Eye, EyeOff, AlertTriangle, ArrowLeft } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import logo from "@/assets/logo.png";
+import { isLockedOut } from "@/lib/beforeAfterStore";
 
 const loginSchema = z.object({
   username: z.string().trim().min(1, "Username is required").max(50),
@@ -20,11 +21,15 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export default function AdminLogin() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Fix: Properly get lockInfo from the store
+  const lockInfo = isLockedOut();
 
   useEffect(() => {
     // Check if already logged in
@@ -38,7 +43,6 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
 
-    // Validate input
     const result = loginSchema.safeParse({ username, password });
     if (!result.success) {
       setError(result.error.errors[0].message);
@@ -46,6 +50,7 @@ export default function AdminLogin() {
     }
 
     setLoading(true);
+
     try {
       const response = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
@@ -63,10 +68,8 @@ export default function AdminLogin() {
         return;
       }
 
-      // Store token in localStorage
       localStorage.setItem("moaser_admin_token", data.token);
       localStorage.setItem("moaser_admin_user", JSON.stringify(data.user));
-
       navigate("/admin");
     } catch (err) {
       setError("Failed to connect to server. Please check your connection.");
@@ -87,6 +90,7 @@ export default function AdminLogin() {
         >
           <ArrowLeft className="w-4 h-4 ltr:mr-1 rtl:ml-1 rtl:rotate-180" /> {t("admin.back")}
         </Button>
+
         <Card className="w-full max-w-md shadow-card">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4">
@@ -95,6 +99,7 @@ export default function AdminLogin() {
             <CardTitle className="font-heading text-2xl">{t("admin.title")}</CardTitle>
             <CardDescription>{t("admin.description")}</CardDescription>
           </CardHeader>
+
           <CardContent>
             {lockInfo.locked && (
               <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center gap-2 text-destructive text-sm">
@@ -102,6 +107,7 @@ export default function AdminLogin() {
                 {t("admin.locked", { minutes: Math.ceil(lockInfo.remainingSeconds / 60) })}
               </div>
             )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username">{t("admin.username")}</Label>
@@ -114,6 +120,7 @@ export default function AdminLogin() {
                   maxLength={50}
                 />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="password">{t("admin.password")}</Label>
                 <div className="relative">
@@ -135,9 +142,11 @@ export default function AdminLogin() {
                   </button>
                 </div>
               </div>
+
               {error && !lockInfo.locked && (
                 <p className="text-sm text-destructive">{error}</p>
               )}
+
               <Button type="submit" className="w-full" size="lg" disabled={lockInfo.locked || loading}>
                 {loading ? t("admin.signingIn") : t("admin.signIn")}
               </Button>

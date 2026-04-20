@@ -42,15 +42,15 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-card/95 backdrop-blur-xl shadow-card py-3 border-b border-border"
-          : "bg-card/80 backdrop-blur-md py-5"
+          ? "bg-card/95 backdrop-blur-xl shadow-card py-1.5 lg:py-1.5 border-b border-border"
+          : "bg-card/80 backdrop-blur-md py-1.5 lg:py-2"
       }`}
     >
       <div className="container mx-auto flex items-center justify-between px-4">
-        <button onClick={() => goTo("/")} className="flex items-center gap-3">
-          <img src={logo} alt="Moaser Specialized Dental Hospital" className="h-20 w-20 object-contain" />
+        <button onClick={() => goTo("/")} className="flex items-center gap-2">
+          <img src={logo} alt="Moaser Specialized Dental Hospital" className="h-16 w-16 lg:h-20 lg:w-20 object-contain" />
           <div>
-            <p className="font-heading text-[11px] sm:text-lg font-bold text-primary leading-tight">{t("nav.brandName")}</p>
+            <p className="font-heading text-[10px] sm:text-sm lg:text-lg font-bold text-primary leading-tight">{t("nav.brandName")}</p>
           </div>
         </button>
 
@@ -75,7 +75,7 @@ export default function Navbar() {
           <LanguageSwitcher />
           <a href="tel:0780103030" className="flex items-center gap-2 text-sm font-semibold text-secondary" dir="ltr">
             <Phone className="h-4 w-4" />
-            <span dir="ltr">0780 103 030</span>
+            <span dir="ltr">0780 10 30 30</span>
           </a>
           <Button size="lg" onClick={() => goTo("/appointment")}>
             {t("nav.bookNow")}
