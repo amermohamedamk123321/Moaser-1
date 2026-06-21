@@ -19,11 +19,13 @@ export default function DoctorsSection() {
     <section id="doctors" className="relative py-24 lg:py-32">
       <AnimatedSection className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl text-center mb-20">
-          <AnimatedItem>
-            <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
-              {t("doctors.tag")}
-            </span>
-          </AnimatedItem>
+          {t("doctors.tag") && (
+            <AnimatedItem>
+              <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
+                {t("doctors.tag")}
+              </span>
+            </AnimatedItem>
+          )}
           <AnimatedItem>
             <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl mb-6">
               {t("doctors.title")}

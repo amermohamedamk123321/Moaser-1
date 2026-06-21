@@ -1,18 +1,18 @@
 import Navbar from "@/components/Navbar";
-import DoctorsSection from "@/components/DoctorsSection";
+import PatientSurveyForm from "@/components/PatientSurveyForm";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 
-const DoctorsPage = () => (
+const PatientSurveyPage = () => (
   <PageTransition>
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-24">
-        <DoctorsSection />
+        <PatientSurveyForm />
       </div>
       <Footer />
     </div>
   </PageTransition>
 );
 
-export default DoctorsPage;
+export default PatientSurveyPage;

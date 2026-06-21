@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import AboutPage from "./pages/AboutPage";
 import ServicesPage from "./pages/ServicesPage";
 import DoctorsPage from "./pages/DoctorsPage";
-
+import PatientSurveyPage from "./pages/PatientSurveyPage";
 import ContactPage from "./pages/ContactPage";
 import AppointmentPage from "./pages/AppointmentPage";
 import NotFound from "./pages/NotFound";
@@ -27,7 +27,7 @@ function AnimatedRoutes() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/doctors" element={<DoctorsPage />} />
-        
+        <Route path="/patient-survey" element={<PatientSurveyPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/appointment" element={<AppointmentPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
