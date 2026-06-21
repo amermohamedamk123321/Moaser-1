@@ -37,14 +37,15 @@ function validateRating(rating) {
 
 function validateServiceType(service) {
   const validServices = [
-    "general-checkup",
-    "cleaning",
-    "root-canal",
-    "crown",
-    "implant",
+    "maxillofacial",
+    "implants",
+    "digital",
+    "rootcanal",
+    "cosmetic",
+    "orthodontics",
+    "prosthodontics",
     "whitening",
-    "braces",
-    "other"
+    "emergency"
   ];
   return validServices.includes(service);
 }
