@@ -38,16 +38,11 @@ export default function DoctorsSection() {
         </div>
 
         <div className="grid gap-y-20 gap-x-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto justify-items-center">
-          {doctorKeys.slice(0, -1).map((doc, i) => (
+          {doctorKeys.map((doc, i) => (
             <AnimatedItem key={doc.key} variant="scaleUp" delay={i * 0.08}>
               <DoctorCard docKey={doc.key} initials={doc.initials} index={i} />
             </AnimatedItem>
           ))}
-        </div>
-        <div className="flex justify-center mt-16 max-w-5xl mx-auto">
-          <AnimatedItem variant="scaleUp" delay={doctorKeys.length * 0.08}>
-            <DoctorCard docKey={doctorKeys[doctorKeys.length - 1].key} initials={doctorKeys[doctorKeys.length - 1].initials} index={doctorKeys.length - 1} />
-          </AnimatedItem>
         </div>
       </AnimatedSection>
     </section>
