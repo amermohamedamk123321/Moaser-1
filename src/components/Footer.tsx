@@ -24,18 +24,6 @@ export default function Footer() {
 
   return (
     <footer className="bg-primary text-primary-foreground">
-      {/* CTA Section */}
-      <div className="border-b border-primary-foreground/10">
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h2 className="font-heading text-2xl sm:text-3xl font-bold mb-3">
-            {t("footer.ctaTitle")}
-          </h2>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-            {t("footer.ctaDescription")}
-          </p>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col items-center lg:items-start">

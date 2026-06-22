@@ -6,10 +6,11 @@ const doctorKeys = [
   { key: "doc1", initials: "RS" },
   { key: "doc2", initials: "QT" },
   { key: "doc3", initials: "SA" },
-  { key: "doc4", initials: "KF" },
-  { key: "doc5", initials: "AS" },
-  { key: "doc6", initials: "ZB" },
-  { key: "doc7", initials: "RA" },
+  { key: "doc4", initials: "ASA" },
+  { key: "doc5", initials: "KF" },
+  { key: "doc6", initials: "MAS" },
+  { key: "doc7", initials: "ZB" },
+  { key: "doc8", initials: "RA" },
 ];
 
 export default function DoctorsSection() {
