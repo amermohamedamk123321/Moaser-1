@@ -21,7 +21,13 @@ import {
   getEvaluationsByDoctor,
   getEvaluationById,
   deleteEvaluation,
-  getEvaluationStats
+  getEvaluationStats,
+  // Surveys
+  insertSurvey,
+  getAllSurveys,
+  getSurveyById,
+  deleteSurvey,
+  getSurveyStats
 } from "./database.js";
 import { hashPassword, verifyPassword } from "./utils/passwordHash.js";
 import { generateToken, verifyToken } from "./utils/jwtToken.js";
@@ -30,7 +36,8 @@ import {
   validateLoginData,
   validateChangePasswordData,
   validateAppointmentData,
-  validateEvaluationData
+  validateEvaluationData,
+  validateSurveyData
 } from "./middleware/validation.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { loginLimiter, apiLimiter, publicLimiter } from "./middleware/rateLimiter.js";
@@ -331,6 +338,71 @@ app.delete("/api/evaluations/:id", authMiddleware, apiLimiter, async (req, res) 
     res.json({ success: true, message: "Evaluation deleted successfully" });
   } catch (error) {
     console.error("Error deleting evaluation:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ===== PATIENT SURVEYS ROUTES =====
+
+// POST /api/surveys - Submit survey (public)
+app.post("/api/surveys", publicLimiter, async (req, res) => {
+  try {
+    const { q1, q2, q3, q4, q5 } = req.body;
+
+    // Validate input
+    const validation = validateSurveyData({ q1, q2, q3, q4, q5 });
+    if (!validation.isValid) {
+      return res.status(400).json({ error: "Validation failed", errors: validation.errors });
+    }
+
+    const survey = await insertSurvey(q1, q2, q3, q4, q5);
+    res.status(201).json({ success: true, survey });
+  } catch (error) {
+    console.error("Error submitting survey:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/surveys - Get all surveys (admin only)
+app.get("/api/surveys", authMiddleware, apiLimiter, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+
+    const surveys = await getAllSurveys(page, limit);
+    const stats = await getSurveyStats();
+
+    res.json({ success: true, surveys, stats });
+  } catch (error) {
+    console.error("Error fetching surveys:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/surveys/:id - Get single survey (admin only)
+app.get("/api/surveys/:id", authMiddleware, async (req, res) => {
+  try {
+    const survey = await getSurveyById(req.params.id);
+    if (!survey) {
+      return res.status(404).json({ error: "Survey not found" });
+    }
+    res.json({ success: true, survey });
+  } catch (error) {
+    console.error("Error fetching survey:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// DELETE /api/surveys/:id - Delete survey (admin only)
+app.delete("/api/surveys/:id", authMiddleware, apiLimiter, async (req, res) => {
+  try {
+    const result = await deleteSurvey(req.params.id);
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Survey not found" });
+    }
+    res.json({ success: true, message: "Survey deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting survey:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
