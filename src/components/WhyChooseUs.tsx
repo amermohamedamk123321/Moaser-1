@@ -33,7 +33,7 @@ export default function WhyChooseUs() {
             </AnimatedItem>
             <AnimatedItem variant="fadeLeft">
               <p className="text-muted-foreground leading-relaxed max-w-lg">
-                {t("about.quote")}
+                {t("home.whyContent")}
               </p>
             </AnimatedItem>
           </div>

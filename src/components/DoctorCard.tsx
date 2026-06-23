@@ -5,10 +5,11 @@ const DOCTOR_IMAGES: Record<string, string> = {
   doc1: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F253e1b88f8254cc0981933d5ef0cfd41?format=webp&width=800&height=1200",
   doc2: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F85d0dea973c54a02b7f4ff5dbac2dc3b?format=webp&width=800&height=1200",
   doc3: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fb8206a1a6b0f43e9a860911f5b345e22?format=webp&width=800&height=1200",
-  doc4: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F95b1cba1cdbe4d2da9923f097f66808c?format=webp&width=800&height=1200",
-  doc5: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F7f05a5b1f1f04a9a97905c401232483a?format=webp&width=800&height=1200",
-  doc6: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F73ab78914bf94396a1930fe1753d5eb8?format=webp&width=800&height=1200",
-  doc7: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fa70a778c3ff449ea93b0d99e77e09e90?format=webp&width=800&height=1200",
+  doc4: "https://cdn.builder.io/api/v1/image/assets%2F7469f803d36a4105ba11ae5a139f172c%2F1dac3ef4b69141308b047bc0c3a406c4?format=webp&width=800&height=1200",
+  doc5: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F95b1cba1cdbe4d2da9923f097f66808c?format=webp&width=800&height=1200",
+  doc6: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F7f05a5b1f1f04a9a97905c401232483a?format=webp&width=800&height=1200",
+  doc7: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2F73ab78914bf94396a1930fe1753d5eb8?format=webp&width=800&height=1200",
+  doc8: "https://cdn.builder.io/api/v1/image/assets%2F13a4766942d54028b94747b6985a55d1%2Fa70a778c3ff449ea93b0d99e77e09e90?format=webp&width=800&height=1200",
 };
 
 interface DoctorCardProps {

@@ -36,12 +36,10 @@ export default function HeroSection() {
         </div>
 
         <h1 className="mb-4 max-w-4xl font-heading text-4xl font-bold leading-tight text-primary-foreground sm:text-5xl md:text-6xl lg:text-7xl animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
-          {t("hero.heading1")}
-          <br />
-          <span className="text-secondary-foreground/80">{t("hero.heading2")}</span>
+          {t("hero.title")}
         </h1>
 
-        <p className="mb-10 max-w-xl text-primary-foreground/60 animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
+        <p className="mb-10 max-w-2xl text-primary-foreground/60 animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
           {t("hero.subtitle")}
         </p>
 

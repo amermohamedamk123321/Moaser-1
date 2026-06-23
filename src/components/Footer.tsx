@@ -86,15 +86,24 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-primary-foreground/10">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-primary-foreground/50 sm:flex-row">
-          <p>{t("footer.copyright")}</p>
-          <p>{t("footer.rights")}</p>
-          <button
-            onClick={() => goTo("/admin/login")}
-            className="flex items-center gap-1 hover:text-primary-foreground/70 transition-colors"
-          >
-            <Settings className="h-3 w-3" /> Admin
-          </button>
+        <div className="container mx-auto px-4 py-5">
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <p className="text-xs text-primary-foreground/50">© 2026 {t("footer.brandName")}</p>
+
+            <div className="text-xs text-primary-foreground/50 whitespace-nowrap" dir="ltr">
+              Powered by <a href="https://turabroot.com" target="_blank" rel="noopener noreferrer" className="group relative inline-block font-semibold text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary-foreground/40 hover:after:w-full after:transition-all after:duration-300">Turab Root</a>
+            </div>
+
+            <div className="flex items-center justify-center gap-4">
+              <p className="text-xs text-primary-foreground/50">{t("footer.rights")}</p>
+              <button
+                onClick={() => goTo("/admin/login")}
+                className="flex items-center gap-1 text-xs text-primary-foreground/50 hover:text-primary-foreground/70 transition-colors"
+              >
+                <Settings className="h-3 w-3" /> Admin
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
