@@ -9,11 +9,10 @@ const icons = [Scissors, Syringe, Scan, Heart, Sparkles, SmilePlus, ShieldCheck,
 export default function ServicesSection() {
   const { t } = useTranslation();
 
-  const services = Array.from({ length: 6 }, (_, i) => ({
+  const services = Array.from({ length: 7 }, (_, i) => ({
     icon: icons[i],
-    title: t(`services.s${i + 1}Title`),
-    desc: t(`services.s${i + 1}Desc`),
-    hasTeamApproach: i === 3, // Advanced Technology (s4) has Team Approach subsection
+    title: i === 6 ? t("services.s4TeamApproachTitle") : t(`services.s${i + 1}Title`),
+    desc: i === 6 ? t("services.s4TeamApproachDesc") : t(`services.s${i + 1}Desc`),
   }));
 
   return (
@@ -49,18 +48,7 @@ export default function ServicesSection() {
                     <s.icon className="h-6 w-6" />
                   </div>
                   <h3 className="mb-2 font-heading text-base font-semibold text-foreground">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">{s.desc}</p>
-
-                  {s.hasTeamApproach && (
-                    <div className="border-t border-border pt-4 mt-4">
-                      <h4 className="font-semibold text-foreground mb-2">
-                        {t("services.s4TeamApproachTitle")}
-                      </h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {t("services.s4TeamApproachDesc")}
-                      </p>
-                    </div>
-                  )}
+                  <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
                 </div>
               </div>
             </AnimatedItem>
