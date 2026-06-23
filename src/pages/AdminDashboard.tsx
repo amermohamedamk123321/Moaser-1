@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { LogOut, Trash2, Plus, Shield, ImageIcon, Eye, EyeOff, BarChart3, Calendar } from "lucide-react";
+import { LogOut, Trash2, Plus, Shield, ImageIcon, Eye, EyeOff, Calendar } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   getBeforeAfterImages,
@@ -16,7 +16,6 @@ import {
   BeforeAfterImage,
 } from "@/lib/beforeAfterStore";
 import PageTransition from "@/components/PageTransition";
-import DoctorsReport from "@/components/DoctorsReport";
 import AppointmentsList from "@/components/AppointmentsList";
 import logo from "@/assets/logo.png";
 
@@ -207,7 +206,6 @@ export default function AdminDashboard() {
             <TabsList className="mb-6">
               <TabsTrigger value="images" className="gap-2"><ImageIcon className="w-4 h-4" /> Before & After</TabsTrigger>
               <TabsTrigger value="appointments" className="gap-2"><Calendar className="w-4 h-4" /> Appointments</TabsTrigger>
-              <TabsTrigger value="reports" className="gap-2"><BarChart3 className="w-4 h-4" /> Doctors Report</TabsTrigger>
               <TabsTrigger value="credentials" className="gap-2"><Shield className="w-4 h-4" /> Credentials</TabsTrigger>
             </TabsList>
 
@@ -220,19 +218,6 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <AppointmentsList />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* --- Doctors Report Tab --- */}
-            <TabsContent value="reports" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="w-5 h-5" /> Doctor Evaluations</CardTitle>
-                  <CardDescription>View and manage all doctor evaluations submitted by patients.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <DoctorsReport />
                 </CardContent>
               </Card>
             </TabsContent>
