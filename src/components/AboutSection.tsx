@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Shield, Users, Award, Microscope } from "lucide-react";
+import { Shield, Users, Award, Microscope, Heart, Smile, Sparkles } from "lucide-react";
 import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 
 export default function AboutSection() {
@@ -10,6 +10,9 @@ export default function AboutSection() {
     { icon: Microscope, title: t("about.feature2Title"), desc: t("about.feature2Desc") },
     { icon: Shield, title: t("about.feature3Title"), desc: t("about.feature3Desc") },
     { icon: Award, title: t("about.feature4Title"), desc: t("about.feature4Desc") },
+    { icon: Heart, title: t("about.feature5Title"), desc: t("about.feature5Desc") },
+    { icon: Smile, title: t("about.feature6Title"), desc: t("about.feature6Desc") },
+    { icon: Sparkles, title: t("about.feature7Title"), desc: t("about.feature7Desc") },
   ];
 
   return (
@@ -35,7 +38,7 @@ export default function AboutSection() {
           </AnimatedItem>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
             <AnimatedItem key={i} variant="scaleUp">
               <div className="group relative rounded-2xl border border-border bg-card p-8 shadow-card transition-all duration-500 hover:-translate-y-2 hover:shadow-glow h-full">
