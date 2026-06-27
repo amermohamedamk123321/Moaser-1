@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { Scissors, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, Syringe, Tooth, Leaf } from "lucide-react";
+import { Scissors, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, Syringe, AlertCircle, Droplet } from "lucide-react";
 import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 import digitalImg from "@/assets/digital-dentistry.jpg";
 import surgeryImg from "@/assets/surgery-room.jpg";
 
-const icons = [Scissors, Syringe, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, Tooth, Leaf];
+const icons = [Scissors, Syringe, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, AlertCircle, Droplet];
 
 export default function ServicesSection() {
   const { t } = useTranslation();
