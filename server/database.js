@@ -89,10 +89,24 @@ function createTables() {
     )
   `;
 
+  const surveysTableSql = `
+    CREATE TABLE IF NOT EXISTS patient_surveys (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      q1 INTEGER NOT NULL,
+      q2 INTEGER NOT NULL,
+      q3 INTEGER NOT NULL,
+      q4 INTEGER NOT NULL,
+      q5 INTEGER NOT NULL,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+
   try {
     db.run(adminTableSql);
     db.run(appointmentsTableSql);
     db.run(evaluationsTableSql);
+    db.run(surveysTableSql);
     saveDatabase();
     console.log("Database tables ensured");
   } catch (err) {
@@ -375,10 +389,10 @@ function deleteEvaluation(id) {
 function getEvaluationStats() {
   try {
     const sql = `
-      SELECT 
+      SELECT
         COUNT(*) as totalEvaluations,
-        AVG(CASE WHEN overallSatisfaction = 'excellent' THEN 3 
-                 WHEN overallSatisfaction = 'average' THEN 2 
+        AVG(CASE WHEN overallSatisfaction = 'excellent' THEN 3
+                 WHEN overallSatisfaction = 'average' THEN 2
                  ELSE 1 END) as averageSatisfaction
       FROM doctor_evaluations
     `;
@@ -390,6 +404,89 @@ function getEvaluationStats() {
   } catch (err) {
     console.error("Error fetching evaluation stats:", err);
     return { totalEvaluations: 0, averageSatisfaction: 0 };
+  }
+}
+
+// ===== PATIENT SURVEYS FUNCTIONS =====
+
+function insertSurvey(q1, q2, q3, q4, q5) {
+  try {
+    const stmt = db.prepare(`
+      INSERT INTO patient_surveys (q1, q2, q3, q4, q5)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    stmt.bind([q1, q2, q3, q4, q5]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { q1, q2, q3, q4, q5 };
+  } catch (err) {
+    console.error("Error inserting survey:", err);
+    throw err;
+  }
+}
+
+function getAllSurveys(page = 1, limit = 50) {
+  try {
+    const offset = (page - 1) * limit;
+    const sql = "SELECT * FROM patient_surveys ORDER BY createdAt DESC LIMIT ? OFFSET ?";
+    const stmt = db.prepare(sql);
+    stmt.bind([limit, offset]);
+    const results = getResults(stmt);
+    return results;
+  } catch (err) {
+    console.error("Error fetching surveys:", err);
+    return [];
+  }
+}
+
+function getSurveyById(id) {
+  try {
+    const stmt = db.prepare("SELECT * FROM patient_surveys WHERE id = ?");
+    stmt.bind([id]);
+    const results = getResults(stmt);
+    return results.length > 0 ? results[0] : null;
+  } catch (err) {
+    console.error("Error fetching survey:", err);
+    return null;
+  }
+}
+
+function deleteSurvey(id) {
+  try {
+    const stmt = db.prepare("DELETE FROM patient_surveys WHERE id = ?");
+    stmt.bind([id]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { success: true, changes: 1 };
+  } catch (err) {
+    console.error("Error deleting survey:", err);
+    throw err;
+  }
+}
+
+function getSurveyStats() {
+  try {
+    const sql = `
+      SELECT
+        COUNT(*) as totalResponses,
+        ROUND(AVG(q1), 2) as avgQ1,
+        ROUND(AVG(q2), 2) as avgQ2,
+        ROUND(AVG(q3), 2) as avgQ3,
+        ROUND(AVG(q4), 2) as avgQ4,
+        ROUND(AVG(q5), 2) as avgQ5,
+        ROUND((AVG(q1) + AVG(q2) + AVG(q3) + AVG(q4) + AVG(q5)) / 5, 2) as avgOverall
+      FROM patient_surveys
+    `;
+    const stmt = db.prepare(sql);
+    stmt.step();
+    const row = stmt.getAsObject();
+    stmt.free();
+    return row;
+  } catch (err) {
+    console.error("Error fetching survey stats:", err);
+    return { totalResponses: 0, avgQ1: 0, avgQ2: 0, avgQ3: 0, avgQ4: 0, avgQ5: 0, avgOverall: 0 };
   }
 }
 
@@ -412,5 +509,11 @@ export {
   getEvaluationsByDoctor,
   getEvaluationById,
   deleteEvaluation,
-  getEvaluationStats
+  getEvaluationStats,
+  // Surveys
+  insertSurvey,
+  getAllSurveys,
+  getSurveyById,
+  deleteSurvey,
+  getSurveyStats
 };

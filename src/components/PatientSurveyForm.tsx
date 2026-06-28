@@ -5,11 +5,14 @@ import { toast } from "sonner";
 import { Star } from "lucide-react";
 import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function PatientSurveyForm() {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "fa";
-  
+
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [ratings, setRatings] = useState<Record<string, number>>({
     q1: 0,
     q2: 0,
@@ -30,30 +33,49 @@ export default function PatientSurveyForm() {
     setRatings((prev) => ({ ...prev, [questionKey]: rating }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const allRated = Object.values(ratings).every((r) => r > 0);
     if (!allRated) {
       toast.error("Please rate all questions");
       return;
     }
 
-    setSubmitted(true);
-    toast.success(t("patientSurvey.toastTitle"), {
-      description: t("patientSurvey.toastDesc"),
-    });
-
-    setTimeout(() => {
-      setSubmitted(false);
-      setRatings({
-        q1: 0,
-        q2: 0,
-        q3: 0,
-        q4: 0,
-        q5: 0,
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/surveys`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ratings)
       });
-    }, 3000);
+
+      if (!response.ok) {
+        throw new Error("Failed to submit survey");
+      }
+
+      setSubmitted(true);
+      toast.success(t("patientSurvey.toastTitle"), {
+        description: t("patientSurvey.toastDesc"),
+      });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to submit survey"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitAnother = () => {
+    setSubmitted(false);
+    setRatings({
+      q1: 0,
+      q2: 0,
+      q3: 0,
+      q4: 0,
+      q5: 0,
+    });
   };
 
   if (submitted) {
@@ -76,16 +98,7 @@ export default function PatientSurveyForm() {
             </AnimatedItem>
             <AnimatedItem>
               <Button
-                onClick={() => {
-                  setSubmitted(false);
-                  setRatings({
-                    q1: 0,
-                    q2: 0,
-                    q3: 0,
-                    q4: 0,
-                    q5: 0,
-                  });
-                }}
+                onClick={handleSubmitAnother}
                 className="mt-6"
               >
                 {t("patientSurvey.submitAnother")}
@@ -156,8 +169,9 @@ export default function PatientSurveyForm() {
                   type="submit"
                   size="lg"
                   className="flex-1"
+                  disabled={loading}
                 >
-                  {t("patientSurvey.submitBtn")}
+                  {loading ? "Submitting..." : t("patientSurvey.submitBtn")}
                 </Button>
               </div>
             </form>

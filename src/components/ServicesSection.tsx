@@ -1,19 +1,32 @@
 import { useTranslation } from "react-i18next";
-import { Scissors, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, Syringe } from "lucide-react";
+import { Scissors, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, Syringe, AlertCircle, Droplet } from "lucide-react";
 import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 import digitalImg from "@/assets/digital-dentistry.jpg";
 import surgeryImg from "@/assets/surgery-room.jpg";
 
-const icons = [Scissors, Syringe, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap];
+const icons = [Scissors, Syringe, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, AlertCircle, Droplet];
 
 export default function ServicesSection() {
   const { t } = useTranslation();
 
-  const services = Array.from({ length: 7 }, (_, i) => ({
-    icon: icons[i],
-    title: i === 6 ? t("services.s4TeamApproachTitle") : t(`services.s${i + 1}Title`),
-    desc: i === 6 ? t("services.s4TeamApproachDesc") : t(`services.s${i + 1}Desc`),
-  }));
+  const services = Array.from({ length: 10 }, (_, i) => {
+    let serviceNum = i + 1;
+    if (i === 6) {
+      return {
+        icon: icons[i],
+        title: t("services.s4TeamApproachTitle"),
+        desc: t("services.s4TeamApproachDesc"),
+      };
+    }
+    if (i >= 7) {
+      serviceNum = i;
+    }
+    return {
+      icon: icons[i],
+      title: t(`services.s${serviceNum}Title`),
+      desc: t(`services.s${serviceNum}Desc`),
+    };
+  });
 
   return (
     <section id="services" className="relative py-24 lg:py-32 bg-muted/50">

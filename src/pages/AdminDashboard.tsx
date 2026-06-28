@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { LogOut, Trash2, Plus, Shield, ImageIcon, Eye, EyeOff, Calendar } from "lucide-react";
+import { LogOut, Trash2, Plus, Shield, ImageIcon, Eye, EyeOff, Calendar, BarChart3 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   getBeforeAfterImages,
@@ -17,6 +17,7 @@ import {
 } from "@/lib/beforeAfterStore";
 import PageTransition from "@/components/PageTransition";
 import AppointmentsList from "@/components/AppointmentsList";
+import SurveysList from "@/components/SurveysList";
 import logo from "@/assets/logo.png";
 
 const credSchema = z.object({
@@ -206,6 +207,7 @@ export default function AdminDashboard() {
             <TabsList className="mb-6">
               <TabsTrigger value="images" className="gap-2"><ImageIcon className="w-4 h-4" /> Before & After</TabsTrigger>
               <TabsTrigger value="appointments" className="gap-2"><Calendar className="w-4 h-4" /> Appointments</TabsTrigger>
+              <TabsTrigger value="surveys" className="gap-2"><BarChart3 className="w-4 h-4" /> Patient Surveys</TabsTrigger>
               <TabsTrigger value="credentials" className="gap-2"><Shield className="w-4 h-4" /> Credentials</TabsTrigger>
             </TabsList>
 
@@ -218,6 +220,19 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <AppointmentsList />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* --- Patient Surveys Tab --- */}
+            <TabsContent value="surveys" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg"><BarChart3 className="w-5 h-5" /> Patient Surveys</CardTitle>
+                  <CardDescription>View patient satisfaction survey responses and analytics.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SurveysList />
                 </CardContent>
               </Card>
             </TabsContent>

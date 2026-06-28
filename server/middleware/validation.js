@@ -145,6 +145,24 @@ function validateEvaluationData(data) {
   };
 }
 
+function validateSurveyData(data) {
+  const errors = [];
+
+  ["q1", "q2", "q3", "q4", "q5"].forEach(field => {
+    const val = data[field];
+    if (val === undefined || val === null) {
+      errors.push(`${field} is required`);
+    } else if (!Number.isInteger(val) || val < 1 || val > 5) {
+      errors.push(`${field} must be an integer between 1 and 5`);
+    }
+  });
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
 export {
   validateEmail,
   validatePhone,
@@ -157,5 +175,6 @@ export {
   validateAppointmentData,
   validateLoginData,
   validateChangePasswordData,
-  validateEvaluationData
+  validateEvaluationData,
+  validateSurveyData
 };
