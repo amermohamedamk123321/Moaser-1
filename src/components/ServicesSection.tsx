@@ -9,11 +9,24 @@ const icons = [Scissors, Syringe, Scan, Heart, Sparkles, SmilePlus, ShieldCheck,
 export default function ServicesSection() {
   const { t } = useTranslation();
 
-  const services = Array.from({ length: 10 }, (_, i) => ({
-    icon: icons[i],
-    title: i === 6 ? t("services.s4TeamApproachTitle") : t(`services.s${i + 1}Title`),
-    desc: i === 6 ? t("services.s4TeamApproachDesc") : t(`services.s${i + 1}Desc`),
-  }));
+  const services = Array.from({ length: 10 }, (_, i) => {
+    let serviceNum = i + 1;
+    if (i === 6) {
+      return {
+        icon: icons[i],
+        title: t("services.s4TeamApproachTitle"),
+        desc: t("services.s4TeamApproachDesc"),
+      };
+    }
+    if (i >= 7) {
+      serviceNum = i;
+    }
+    return {
+      icon: icons[i],
+      title: t(`services.s${serviceNum}Title`),
+      desc: t(`services.s${serviceNum}Desc`),
+    };
+  });
 
   return (
     <section id="services" className="relative py-24 lg:py-32 bg-muted/50">
