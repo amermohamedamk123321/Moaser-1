@@ -116,11 +116,6 @@ export default function PatientSurveyForm() {
         <div className="mx-auto max-w-2xl">
           <div className="mb-12 text-center">
             <AnimatedItem>
-              <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
-                {t("patientSurvey.tag")}
-              </span>
-            </AnimatedItem>
-            <AnimatedItem>
               <h1 className="font-heading text-3xl font-bold text-foreground sm:text-4xl mb-4">
                 {t("patientSurvey.title")}
               </h1>
