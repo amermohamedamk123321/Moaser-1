@@ -23,7 +23,7 @@ export default function HomeCTA() {
         </AnimatedItem>
         <AnimatedItem>
           <p className="mx-auto mb-10 max-w-xl text-primary-foreground/70">
-            {t("home.ctaSubtitle")}
+            همین امروز وقت خود را رزرو کنید و خدمات طبابت‌دندان نزدیک به معیارهای بین‌المللی را تجربه کنید.
           </p>
         </AnimatedItem>
         <AnimatedItem>
