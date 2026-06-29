@@ -35,6 +35,10 @@ function validateRating(rating) {
   return ["poor", "average", "excellent"].includes(rating);
 }
 
+function validateWaitingTimeRating(rating) {
+  return ["very_long", "long", "appropriate"].includes(rating);
+}
+
 function validateServiceType(service) {
   const validServices = [
     "maxillofacial",
@@ -152,10 +156,22 @@ function validateSurveyData(data) {
     const val = data[field];
     if (val === undefined || val === null) {
       errors.push(`${field} is required`);
-    } else if (!Number.isInteger(val) || val < 1 || val > 5) {
-      errors.push(`${field} must be an integer between 1 and 5`);
+    } else if (!Number.isInteger(val) || val < 1 || val > 3) {
+      errors.push(`${field} must be an integer between 1 and 3`);
     }
   });
+
+  if (data.waitingTime !== undefined && data.waitingTime !== null) {
+    if (!Number.isInteger(data.waitingTime) || data.waitingTime < 1 || data.waitingTime > 3) {
+      errors.push("waitingTime must be an integer between 1 and 3");
+    }
+  }
+
+  if (data.suggestions !== undefined && data.suggestions !== null) {
+    if (typeof data.suggestions !== "string" || data.suggestions.length > 1000) {
+      errors.push("suggestions must be a string with max 1000 characters");
+    }
+  }
 
   return {
     isValid: errors.length === 0,
@@ -171,6 +187,7 @@ export {
   validateDateFormat,
   validateTimeFormat,
   validateRating,
+  validateWaitingTimeRating,
   validateServiceType,
   validateAppointmentData,
   validateLoginData,

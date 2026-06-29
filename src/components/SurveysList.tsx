@@ -12,6 +12,8 @@ interface Survey {
   q3: number;
   q4: number;
   q5: number;
+  waitingTime?: number;
+  suggestions?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,6 +26,7 @@ interface SurveyStats {
   avgQ4: number;
   avgQ5: number;
   avgOverall: number;
+  avgWaitingTime?: number;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -59,6 +62,7 @@ export default function SurveysList() {
     avgQ4: 0,
     avgQ5: 0,
     avgOverall: 0,
+    avgWaitingTime: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -98,6 +102,7 @@ export default function SurveysList() {
         avgQ4: 0,
         avgQ5: 0,
         avgOverall: 0,
+        avgWaitingTime: 0,
       });
     } catch (err) {
       setError(
@@ -199,13 +204,13 @@ export default function SurveysList() {
           <CardContent className="space-y-6">
             {QUESTIONS.map((q) => {
               const avg = stats[q.key as keyof SurveyStats] as number;
-              const percentage = (avg / 5) * 100;
+              const percentage = (avg / 3) * 100;
               return (
                 <div key={q.key}>
                   <div className="flex items-center justify-between mb-2">
                     <label className="font-medium text-sm">{q.label}</label>
                     <span className={`font-bold ${getColorByRating(avg)}`}>
-                      {avg.toFixed(2)} / 5.0
+                      {avg.toFixed(2)} / 3.0
                     </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
@@ -242,6 +247,8 @@ export default function SurveysList() {
                     <th className="text-center py-3 px-4 font-semibold">Q3</th>
                     <th className="text-center py-3 px-4 font-semibold">Q4</th>
                     <th className="text-center py-3 px-4 font-semibold">Q5</th>
+                    <th className="text-center py-3 px-4 font-semibold">Wait</th>
+                    <th className="text-left py-3 px-4 font-semibold">Notes</th>
                     <th className="text-center py-3 px-4 font-semibold">Action</th>
                   </tr>
                 </thead>
@@ -256,6 +263,10 @@ export default function SurveysList() {
                       <td className="text-center py-3 px-4">{survey.q3}</td>
                       <td className="text-center py-3 px-4">{survey.q4}</td>
                       <td className="text-center py-3 px-4">{survey.q5}</td>
+                      <td className="text-center py-3 px-4">{survey.waitingTime || "-"}</td>
+                      <td className="py-3 px-4 text-xs text-muted-foreground max-w-xs truncate" title={survey.suggestions}>
+                        {survey.suggestions ? survey.suggestions.substring(0, 30) + (survey.suggestions.length > 30 ? "..." : "") : "-"}
+                      </td>
                       <td className="text-center py-3 px-4">
                         <Button
                           variant="destructive"

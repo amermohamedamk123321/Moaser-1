@@ -347,15 +347,15 @@ app.delete("/api/evaluations/:id", authMiddleware, apiLimiter, async (req, res) 
 // POST /api/surveys - Submit survey (public)
 app.post("/api/surveys", publicLimiter, async (req, res) => {
   try {
-    const { q1, q2, q3, q4, q5 } = req.body;
+    const { q1, q2, q3, q4, q5, waitingTime, suggestions } = req.body;
 
     // Validate input
-    const validation = validateSurveyData({ q1, q2, q3, q4, q5 });
+    const validation = validateSurveyData({ q1, q2, q3, q4, q5, waitingTime, suggestions });
     if (!validation.isValid) {
       return res.status(400).json({ error: "Validation failed", errors: validation.errors });
     }
 
-    const survey = await insertSurvey(q1, q2, q3, q4, q5);
+    const survey = await insertSurvey(q1, q2, q3, q4, q5, waitingTime, suggestions);
     res.status(201).json({ success: true, survey });
   } catch (error) {
     console.error("Error submitting survey:", error);
