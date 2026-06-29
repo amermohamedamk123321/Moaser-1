@@ -9,6 +9,7 @@ import AboutPage from "./pages/AboutPage";
 import ServicesPage from "./pages/ServicesPage";
 import DoctorsPage from "./pages/DoctorsPage";
 import PatientSurveyPage from "./pages/PatientSurveyPage";
+import PatientFeedbackSurveyPage from "./pages/PatientFeedbackSurveyPage";
 import ContactPage from "./pages/ContactPage";
 import AppointmentPage from "./pages/AppointmentPage";
 import NotFound from "./pages/NotFound";
@@ -28,6 +29,7 @@ function AnimatedRoutes() {
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/doctors" element={<DoctorsPage />} />
         <Route path="/patient-survey" element={<PatientSurveyPage />} />
+        <Route path="/patient-feedback-survey" element={<PatientFeedbackSurveyPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/appointment" element={<AppointmentPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
