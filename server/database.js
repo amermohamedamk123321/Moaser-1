@@ -97,6 +97,8 @@ function createTables() {
       q3 INTEGER NOT NULL,
       q4 INTEGER NOT NULL,
       q5 INTEGER NOT NULL,
+      waitingTime INTEGER,
+      suggestions TEXT,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
     )
@@ -409,17 +411,17 @@ function getEvaluationStats() {
 
 // ===== PATIENT SURVEYS FUNCTIONS =====
 
-function insertSurvey(q1, q2, q3, q4, q5) {
+function insertSurvey(q1, q2, q3, q4, q5, waitingTime = null, suggestions = null) {
   try {
     const stmt = db.prepare(`
-      INSERT INTO patient_surveys (q1, q2, q3, q4, q5)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO patient_surveys (q1, q2, q3, q4, q5, waitingTime, suggestions)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
-    stmt.bind([q1, q2, q3, q4, q5]);
+    stmt.bind([q1, q2, q3, q4, q5, waitingTime, suggestions]);
     stmt.step();
     stmt.free();
     saveDatabase();
-    return { q1, q2, q3, q4, q5 };
+    return { q1, q2, q3, q4, q5, waitingTime, suggestions };
   } catch (err) {
     console.error("Error inserting survey:", err);
     throw err;
@@ -476,7 +478,8 @@ function getSurveyStats() {
         ROUND(AVG(q3), 2) as avgQ3,
         ROUND(AVG(q4), 2) as avgQ4,
         ROUND(AVG(q5), 2) as avgQ5,
-        ROUND((AVG(q1) + AVG(q2) + AVG(q3) + AVG(q4) + AVG(q5)) / 5, 2) as avgOverall
+        ROUND((AVG(q1) + AVG(q2) + AVG(q3) + AVG(q4) + AVG(q5)) / 5, 2) as avgOverall,
+        ROUND(AVG(waitingTime), 2) as avgWaitingTime
       FROM patient_surveys
     `;
     const stmt = db.prepare(sql);
@@ -486,7 +489,7 @@ function getSurveyStats() {
     return row;
   } catch (err) {
     console.error("Error fetching survey stats:", err);
-    return { totalResponses: 0, avgQ1: 0, avgQ2: 0, avgQ3: 0, avgQ4: 0, avgQ5: 0, avgOverall: 0 };
+    return { totalResponses: 0, avgQ1: 0, avgQ2: 0, avgQ3: 0, avgQ4: 0, avgQ5: 0, avgOverall: 0, avgWaitingTime: 0 };
   }
 }
 

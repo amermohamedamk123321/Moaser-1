@@ -2,52 +2,106 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Star } from "lucide-react";
+import { CheckCircle, Send } from "lucide-react";
 import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-export default function PatientSurveyForm() {
-  const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === "fa";
+type Rating = "poor" | "average" | "excellent" | "";
+type WaitRating = "very_long" | "long" | "appropriate" | "";
 
+interface SurveyData {
+  doctorBehavior: Rating;
+  diagnosisQuality: Rating;
+  assistantBehavior: Rating;
+  staffBehavior: Rating;
+  cleanliness: Rating;
+  waitingTime: WaitRating;
+  suggestions: string;
+}
+
+const surveyKeys: { key: keyof Omit<SurveyData, "waitingTime" | "suggestions">; qKey: string }[] = [
+  { key: "doctorBehavior", qKey: "q1" },
+  { key: "diagnosisQuality", qKey: "q2" },
+  { key: "assistantBehavior", qKey: "q3" },
+  { key: "staffBehavior", qKey: "q4" },
+  { key: "cleanliness", qKey: "q5" },
+];
+
+const ratingMap: Record<Rating, number> = {
+  "poor": 1,
+  "average": 2,
+  "excellent": 3,
+  "": 0,
+};
+
+const waitingTimeMap: Record<WaitRating, number> = {
+  "very_long": 1,
+  "long": 2,
+  "appropriate": 3,
+  "": 0,
+};
+
+export default function PatientSurveyForm() {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [ratings, setRatings] = useState<Record<string, number>>({
-    q1: 0,
-    q2: 0,
-    q3: 0,
-    q4: 0,
-    q5: 0,
+  const [survey, setSurvey] = useState<SurveyData>({
+    doctorBehavior: "",
+    diagnosisQuality: "",
+    assistantBehavior: "",
+    staffBehavior: "",
+    cleanliness: "",
+    waitingTime: "",
+    suggestions: "",
   });
 
-  const questions = [
-    { key: "q1", label: t("patientSurvey.q1") },
-    { key: "q2", label: t("patientSurvey.q2") },
-    { key: "q3", label: t("patientSurvey.q3") },
-    { key: "q4", label: t("patientSurvey.q4") },
-    { key: "q5", label: t("patientSurvey.q5") },
+  const setField = (key: keyof SurveyData, value: string) => {
+    setSurvey((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const ratingOptions: { value: Rating; labelKey: string }[] = [
+    { value: "poor", labelKey: "contact.poor" },
+    { value: "average", labelKey: "contact.average" },
+    { value: "excellent", labelKey: "contact.excellent" },
   ];
 
-  const handleRating = (questionKey: string, rating: number) => {
-    setRatings((prev) => ({ ...prev, [questionKey]: rating }));
-  };
+  const waitOptions: { value: WaitRating; labelKey: string }[] = [
+    { value: "very_long", labelKey: "contact.veryLong" },
+    { value: "long", labelKey: "contact.long" },
+    { value: "appropriate", labelKey: "contact.appropriate" },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const allRated = Object.values(ratings).every((r) => r > 0);
+    const allRated = surveyKeys.every((sq) => survey[sq.key] !== "");
     if (!allRated) {
       toast.error("Please rate all questions");
       return;
     }
 
+    if (!survey.waitingTime) {
+      toast.error("Please rate the waiting time");
+      return;
+    }
+
     setLoading(true);
     try {
+      const payload = {
+        q1: ratingMap[survey.doctorBehavior],
+        q2: ratingMap[survey.diagnosisQuality],
+        q3: ratingMap[survey.assistantBehavior],
+        q4: ratingMap[survey.staffBehavior],
+        q5: ratingMap[survey.cleanliness],
+        waitingTime: waitingTimeMap[survey.waitingTime],
+        suggestions: survey.suggestions || null,
+      };
+
       const response = await fetch(`${API_URL}/api/surveys`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(ratings)
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -69,12 +123,14 @@ export default function PatientSurveyForm() {
 
   const handleSubmitAnother = () => {
     setSubmitted(false);
-    setRatings({
-      q1: 0,
-      q2: 0,
-      q3: 0,
-      q4: 0,
-      q5: 0,
+    setSurvey({
+      doctorBehavior: "",
+      diagnosisQuality: "",
+      assistantBehavior: "",
+      staffBehavior: "",
+      cleanliness: "",
+      waitingTime: "",
+      suggestions: "",
     });
   };
 
@@ -85,8 +141,8 @@ export default function PatientSurveyForm() {
           <div className="max-w-md mx-auto text-center">
             <AnimatedItem>
               <div className="mb-8">
-                <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-6">
-                  <Star className="h-10 w-10 text-primary fill-primary" />
+                <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-accent mb-6">
+                  <CheckCircle className="h-10 w-10 text-secondary" />
                 </div>
                 <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
                   {t("patientSurvey.thankYou")}
@@ -128,47 +184,65 @@ export default function PatientSurveyForm() {
           </div>
 
           <AnimatedItem variant="fadeUp" delay={0.2}>
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {questions.map((q, idx) => (
-                <div key={q.key} className="rounded-2xl border border-border bg-card p-6 shadow-card">
-                  <label className="block mb-4 font-semibold text-foreground text-lg">
-                    {idx + 1}. {q.label}
-                  </label>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {[1, 2, 3, 4, 5].map((rating) => (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {surveyKeys.map((sq) => (
+                <div key={sq.key}>
+                  <p className="mb-2 text-sm font-medium text-foreground">{t(`contact.${sq.qKey}`)}</p>
+                  <div className="flex gap-2">
+                    {ratingOptions.map((opt) => (
                       <button
-                        key={rating}
                         type="button"
-                        onClick={() => handleRating(q.key, rating)}
-                        className={`transition-all duration-300 ${
-                          ratings[q.key] >= rating
-                            ? "text-primary"
-                            : "text-muted-foreground hover:text-secondary"
+                        key={opt.value}
+                        onClick={() => setField(sq.key, opt.value)}
+                        className={`flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
+                          survey[sq.key] === opt.value
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background text-foreground hover:bg-accent"
                         }`}
                       >
-                        <Star
-                          className="h-8 w-8 transition-all duration-300"
-                          fill={ratings[q.key] >= rating ? "currentColor" : "none"}
-                        />
+                        {t(opt.labelKey)}
                       </button>
                     ))}
-                    <span className="ml-auto text-sm text-muted-foreground">
-                      {ratings[q.key] > 0 ? `${ratings[q.key]}/5` : "Not rated"}
-                    </span>
                   </div>
                 </div>
               ))}
 
-              <div className="flex gap-4 pt-6">
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="flex-1"
-                  disabled={loading}
-                >
-                  {loading ? "Submitting..." : t("patientSurvey.submitBtn")}
-                </Button>
+              <div>
+                <p className="mb-2 text-sm font-medium text-foreground">{t("contact.qWait")}</p>
+                <div className="flex gap-2">
+                  {waitOptions.map((opt) => (
+                    <button
+                      type="button"
+                      key={opt.value}
+                      onClick={() => setField("waitingTime", opt.value)}
+                      className={`flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
+                        survey.waitingTime === opt.value
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-foreground hover:bg-accent"
+                      }`}
+                    >
+                      {t(opt.labelKey)}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              <div>
+                <p className="mb-2 text-sm font-medium text-foreground">{t("contact.suggestionsTitle")}</p>
+                <textarea
+                  value={survey.suggestions}
+                  onChange={(e) => setField("suggestions", e.target.value)}
+                  rows={3}
+                  maxLength={1000}
+                  placeholder={t("contact.suggestionsPlaceholder")}
+                  className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                />
+              </div>
+
+              <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                <Send className="h-4 w-4" />
+                {loading ? "Submitting..." : t("contact.submit")}
+              </Button>
             </form>
           </AnimatedItem>
         </div>
