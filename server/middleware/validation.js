@@ -179,6 +179,32 @@ function validateSurveyData(data) {
   };
 }
 
+function validateFeedbackSurveyData(data) {
+  const errors = [];
+
+  if (!data.docKey || !data.docKey.match(/^doc\d$/)) {
+    errors.push("Invalid doctor selection");
+  }
+
+  if (data.doctorFeedback !== undefined && data.doctorFeedback !== null) {
+    if (typeof data.doctorFeedback !== "string" || data.doctorFeedback.length > 2000) {
+      errors.push("Doctor feedback must be a string with max 2000 characters");
+    }
+  }
+
+  const requiredFields = ["q1", "q2", "q3", "q4", "q5"];
+  for (const field of requiredFields) {
+    if (!validateRating(data[field])) {
+      errors.push(`Invalid ${field} rating`);
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
 export {
   validateEmail,
   validatePhone,
@@ -193,5 +219,6 @@ export {
   validateLoginData,
   validateChangePasswordData,
   validateEvaluationData,
-  validateSurveyData
+  validateSurveyData,
+  validateFeedbackSurveyData
 };
