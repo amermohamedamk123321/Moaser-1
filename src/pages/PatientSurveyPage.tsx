@@ -9,9 +9,9 @@ const PatientSurveyPage = () => (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-24">
-        <PatientSurveyForm />
-        <div className="py-12 border-t border-border"></div>
         <PatientFeedbackSurveyForm />
+        <div className="py-12 border-t border-border"></div>
+        <PatientSurveyForm />
       </div>
       <Footer />
     </div>
