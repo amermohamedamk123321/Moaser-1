@@ -27,7 +27,14 @@ import {
   getAllSurveys,
   getSurveyById,
   deleteSurvey,
-  getSurveyStats
+  getSurveyStats,
+  // Feedback Surveys
+  insertFeedbackSurvey,
+  getAllFeedbackSurveys,
+  getFeedbackSurveyById,
+  getFeedbackSurveysByDoctor,
+  deleteFeedbackSurvey,
+  getFeedbackSurveyStats
 } from "./database.js";
 import { hashPassword, verifyPassword } from "./utils/passwordHash.js";
 import { generateToken, verifyToken } from "./utils/jwtToken.js";
@@ -37,7 +44,8 @@ import {
   validateChangePasswordData,
   validateAppointmentData,
   validateEvaluationData,
-  validateSurveyData
+  validateSurveyData,
+  validateFeedbackSurveyData
 } from "./middleware/validation.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { loginLimiter, apiLimiter, publicLimiter } from "./middleware/rateLimiter.js";
@@ -403,6 +411,87 @@ app.delete("/api/surveys/:id", authMiddleware, apiLimiter, async (req, res) => {
     res.json({ success: true, message: "Survey deleted successfully" });
   } catch (error) {
     console.error("Error deleting survey:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ===== PATIENT FEEDBACK SURVEYS ROUTES =====
+
+// POST /api/patient-feedback-surveys - Submit feedback survey (public)
+app.post("/api/patient-feedback-surveys", publicLimiter, async (req, res) => {
+  try {
+    const { docKey, doctorFeedback, q1, q2, q3, q4, q5 } = req.body;
+
+    // Validate input
+    const validation = validateFeedbackSurveyData({ docKey, doctorFeedback, q1, q2, q3, q4, q5 });
+    if (!validation.isValid) {
+      return res.status(400).json({ error: "Validation failed", errors: validation.errors });
+    }
+
+    const feedback = await insertFeedbackSurvey({
+      docKey,
+      doctorFeedback: doctorFeedback || null,
+      q1,
+      q2,
+      q3,
+      q4,
+      q5
+    });
+
+    res.status(201).json({ success: true, feedback });
+  } catch (error) {
+    console.error("Error submitting feedback survey:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/patient-feedback-surveys - Get all feedback surveys (admin only)
+app.get("/api/patient-feedback-surveys", authMiddleware, apiLimiter, async (req, res) => {
+  try {
+    const docKey = req.query.docKey || null;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+
+    let feedbackSurveys;
+    if (docKey) {
+      feedbackSurveys = await getFeedbackSurveysByDoctor(docKey, page, limit);
+    } else {
+      feedbackSurveys = await getAllFeedbackSurveys(page, limit);
+    }
+
+    const stats = await getFeedbackSurveyStats();
+
+    res.json({ success: true, feedbackSurveys, stats });
+  } catch (error) {
+    console.error("Error fetching feedback surveys:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/patient-feedback-surveys/:id - Get single feedback survey (admin only)
+app.get("/api/patient-feedback-surveys/:id", authMiddleware, async (req, res) => {
+  try {
+    const feedbackSurvey = await getFeedbackSurveyById(req.params.id);
+    if (!feedbackSurvey) {
+      return res.status(404).json({ error: "Feedback survey not found" });
+    }
+    res.json({ success: true, feedbackSurvey });
+  } catch (error) {
+    console.error("Error fetching feedback survey:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// DELETE /api/patient-feedback-surveys/:id - Delete feedback survey (admin only)
+app.delete("/api/patient-feedback-surveys/:id", authMiddleware, apiLimiter, async (req, res) => {
+  try {
+    const result = await deleteFeedbackSurvey(req.params.id);
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Feedback survey not found" });
+    }
+    res.json({ success: true, message: "Feedback survey deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting feedback survey:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

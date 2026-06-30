@@ -104,11 +104,27 @@ function createTables() {
     )
   `;
 
+  const patientFeedbackSurveysTableSql = `
+    CREATE TABLE IF NOT EXISTS patient_feedback_surveys (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      docKey TEXT NOT NULL,
+      doctorFeedback TEXT,
+      q1 TEXT NOT NULL,
+      q2 TEXT NOT NULL,
+      q3 TEXT NOT NULL,
+      q4 TEXT NOT NULL,
+      q5 TEXT NOT NULL,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+
   try {
     db.run(adminTableSql);
     db.run(appointmentsTableSql);
     db.run(evaluationsTableSql);
     db.run(surveysTableSql);
+    db.run(patientFeedbackSurveysTableSql);
     saveDatabase();
     console.log("Database tables ensured");
   } catch (err) {
@@ -493,6 +509,121 @@ function getSurveyStats() {
   }
 }
 
+// ===== PATIENT FEEDBACK SURVEYS FUNCTIONS =====
+
+function insertFeedbackSurvey(feedback) {
+  try {
+    const stmt = db.prepare(`
+      INSERT INTO patient_feedback_surveys (docKey, doctorFeedback, q1, q2, q3, q4, q5)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    stmt.bind([
+      feedback.docKey,
+      feedback.doctorFeedback || null,
+      feedback.q1,
+      feedback.q2,
+      feedback.q3,
+      feedback.q4,
+      feedback.q5
+    ]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return feedback;
+  } catch (err) {
+    console.error("Error inserting feedback survey:", err);
+    throw err;
+  }
+}
+
+function getAllFeedbackSurveys(page = 1, limit = 50) {
+  try {
+    const offset = (page - 1) * limit;
+    const sql = "SELECT * FROM patient_feedback_surveys ORDER BY createdAt DESC LIMIT ? OFFSET ?";
+    const stmt = db.prepare(sql);
+    stmt.bind([limit, offset]);
+    const results = getResults(stmt);
+    return results;
+  } catch (err) {
+    console.error("Error fetching feedback surveys:", err);
+    return [];
+  }
+}
+
+function getFeedbackSurveyById(id) {
+  try {
+    const stmt = db.prepare("SELECT * FROM patient_feedback_surveys WHERE id = ?");
+    stmt.bind([id]);
+    const results = getResults(stmt);
+    return results.length > 0 ? results[0] : null;
+  } catch (err) {
+    console.error("Error fetching feedback survey:", err);
+    return null;
+  }
+}
+
+function getFeedbackSurveysByDoctor(docKey, page = 1, limit = 50) {
+  try {
+    const offset = (page - 1) * limit;
+    const sql = "SELECT * FROM patient_feedback_surveys WHERE docKey = ? ORDER BY createdAt DESC LIMIT ? OFFSET ?";
+    const stmt = db.prepare(sql);
+    stmt.bind([docKey, limit, offset]);
+    const results = getResults(stmt);
+    return results;
+  } catch (err) {
+    console.error("Error fetching feedback surveys for doctor:", err);
+    return [];
+  }
+}
+
+function deleteFeedbackSurvey(id) {
+  try {
+    const stmt = db.prepare("DELETE FROM patient_feedback_surveys WHERE id = ?");
+    stmt.bind([id]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { success: true, changes: 1 };
+  } catch (err) {
+    console.error("Error deleting feedback survey:", err);
+    throw err;
+  }
+}
+
+function getFeedbackSurveyStats() {
+  try {
+    const sql = `
+      SELECT
+        COUNT(*) as totalFeedback,
+        COUNT(DISTINCT docKey) as doctorsRated,
+        SUM(CASE WHEN q1 = 'excellent' THEN 1 ELSE 0 END) as q1Excellent,
+        SUM(CASE WHEN q1 = 'average' THEN 1 ELSE 0 END) as q1Average,
+        SUM(CASE WHEN q1 = 'poor' THEN 1 ELSE 0 END) as q1Poor,
+        SUM(CASE WHEN q2 = 'excellent' THEN 1 ELSE 0 END) as q2Excellent,
+        SUM(CASE WHEN q2 = 'average' THEN 1 ELSE 0 END) as q2Average,
+        SUM(CASE WHEN q2 = 'poor' THEN 1 ELSE 0 END) as q2Poor,
+        SUM(CASE WHEN q3 = 'excellent' THEN 1 ELSE 0 END) as q3Excellent,
+        SUM(CASE WHEN q3 = 'average' THEN 1 ELSE 0 END) as q3Average,
+        SUM(CASE WHEN q3 = 'poor' THEN 1 ELSE 0 END) as q3Poor,
+        SUM(CASE WHEN q4 = 'excellent' THEN 1 ELSE 0 END) as q4Excellent,
+        SUM(CASE WHEN q4 = 'average' THEN 1 ELSE 0 END) as q4Average,
+        SUM(CASE WHEN q4 = 'poor' THEN 1 ELSE 0 END) as q4Poor,
+        SUM(CASE WHEN q5 = 'excellent' THEN 1 ELSE 0 END) as q5Excellent,
+        SUM(CASE WHEN q5 = 'average' THEN 1 ELSE 0 END) as q5Average,
+        SUM(CASE WHEN q5 = 'poor' THEN 1 ELSE 0 END) as q5Poor
+      FROM patient_feedback_surveys
+    `;
+    const stmt = db.prepare(sql);
+    stmt.step();
+    const row = stmt.getAsObject();
+    stmt.free();
+    return row;
+  } catch (err) {
+    console.error("Error fetching feedback survey stats:", err);
+    return { totalFeedback: 0 };
+  }
+}
+
 export {
   initializeDatabase,
   // Admin
@@ -518,5 +649,12 @@ export {
   getAllSurveys,
   getSurveyById,
   deleteSurvey,
-  getSurveyStats
+  getSurveyStats,
+  // Feedback Surveys
+  insertFeedbackSurvey,
+  getAllFeedbackSurveys,
+  getFeedbackSurveyById,
+  getFeedbackSurveysByDoctor,
+  deleteFeedbackSurvey,
+  getFeedbackSurveyStats
 };
