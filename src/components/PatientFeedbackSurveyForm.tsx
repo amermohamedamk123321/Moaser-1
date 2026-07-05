@@ -246,9 +246,6 @@ export default function PatientFeedbackSurveyForm() {
                     placeholder={t("patientFeedbackSurvey.doctorFeedbackPlaceholder")}
                     className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
                   />
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {feedback.doctorFeedback.length}/2000
-                  </p>
                 </div>
 
                 <Button onClick={handleNextStep} size="lg" className="w-full">
