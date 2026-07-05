@@ -13,7 +13,7 @@
     "brandSub": ""
   },
   "hero": {
-    "title": "The Center for Receiving the Best Dental Treatment Services",
+    "title": "Moaser Specialized Dental Hospital",
     "subtitle": "Advanced Dental Practice with Modern Technology and Collaboration with Specialists, Providing Treatment According to National and International Standards",
     "badge": "A hub for contemporary dental medicine",
     "heading1": "Moaser Specialized",
@@ -224,7 +224,7 @@
     "ctaTitle": "Are you ready for a better smile?",
     "ctaDescription": "A gateway to contemporary treatments — Providing dental services close to global standards in Kabul city.",
     "brandName": "Moaser Specialized Dental Hospital",
-    "brandDesc": "A window to contemporary treatments — delivering dental care close to international standards in Kabul.",
+    "brandDesc": "A gateway to contemporary treatments — delivering dental care close to international standards in Kabul.",
     "quickLinks": "Quick Links",
     "servicesTitle": "Services",
     "contactTitle": "Contact",
@@ -288,8 +288,8 @@
   },
   "patientSurvey": {
     "tag": "Patient Satisfaction",
-    "title": "Patient Satisfaction Survey",
-    "subtitle": "Help us improve by sharing your experience with our doctors and hospital.",
+    "title": "Patient Satisfaction Survey Form",
+    "subtitle": "Your satisfaction ratings, feedback and suggestions\nPlease help us improve the quality of our services with your feedback.",
     "q1": "How satisfied are you with the doctor's demeanor and behavior?",
     "q2": "How do you evaluate the doctor's competence and expertise?",
     "q3": "How was the doctor's assistant's behavior?",
@@ -306,11 +306,11 @@
   "patientFeedbackSurvey": {
     "tag": "Client Survey",
     "title": "Client Survey",
-    "subtitle": "Help us improve by sharing your feedback about your doctor and our services.",
+    "subtitle": "Overall Evaluation",
     "step1Title": "Doctor Selection",
     "selectDoctor": "Select a Doctor",
     "selectDoctorPlaceholder": "Choose a doctor from the list",
-    "doctorFeedback": "Additional Feedback (Optional)",
+    "doctorFeedback": "Please write your suggestions and feedback",
     "doctorFeedbackPlaceholder": "Share any additional comments or feedback",
     "step2Title": "Rate Your Experience",
     "q1": "How satisfied are you with the doctor's behavior and treatment?",
