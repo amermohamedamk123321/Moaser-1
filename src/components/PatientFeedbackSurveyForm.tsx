@@ -244,7 +244,7 @@ export default function PatientFeedbackSurveyForm() {
                     rows={4}
                     maxLength={2000}
                     placeholder={t("patientFeedbackSurvey.doctorFeedbackPlaceholder")}
-                    className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                    className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
                   />
                 </div>
 
