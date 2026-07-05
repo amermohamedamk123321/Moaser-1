@@ -73,6 +73,18 @@ function createTables() {
     )
   `;
 
+  const doctorsTableSql = `
+    CREATE TABLE IF NOT EXISTS doctors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      docKey TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      specialty TEXT,
+      status TEXT DEFAULT 'active',
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+
   const evaluationsTableSql = `
     CREATE TABLE IF NOT EXISTS doctor_evaluations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -92,6 +104,7 @@ function createTables() {
   const surveysTableSql = `
     CREATE TABLE IF NOT EXISTS patient_surveys (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      docKey TEXT,
       q1 INTEGER NOT NULL,
       q2 INTEGER NOT NULL,
       q3 INTEGER NOT NULL,
@@ -122,6 +135,7 @@ function createTables() {
   try {
     db.run(adminTableSql);
     db.run(appointmentsTableSql);
+    db.run(doctorsTableSql);
     db.run(evaluationsTableSql);
     db.run(surveysTableSql);
     db.run(patientFeedbackSurveysTableSql);
@@ -188,6 +202,49 @@ function updateAdminPassword(userId, passwordHash) {
   } catch (err) {
     console.error("Error updating admin password:", err);
     throw err;
+  }
+}
+
+// ===== DOCTORS FUNCTIONS =====
+
+function createDoctor(docKey, name, specialty = null) {
+  try {
+    const stmt = db.prepare(`
+      INSERT INTO doctors (docKey, name, specialty, status)
+      VALUES (?, ?, ?, 'active')
+    `);
+    stmt.bind([docKey, name, specialty]);
+    stmt.step();
+    stmt.free();
+    saveDatabase();
+    return { docKey, name, specialty };
+  } catch (err) {
+    console.error("Error creating doctor:", err);
+    throw err;
+  }
+}
+
+function getAllDoctors() {
+  try {
+    const sql = "SELECT * FROM doctors WHERE status = 'active' ORDER BY name ASC";
+    const stmt = db.prepare(sql);
+    const results = getResults(stmt);
+    return results;
+  } catch (err) {
+    console.error("Error fetching doctors:", err);
+    return [];
+  }
+}
+
+function getDoctorByKey(docKey) {
+  try {
+    const stmt = db.prepare("SELECT * FROM doctors WHERE docKey = ? AND status = 'active'");
+    stmt.bind([docKey]);
+    const results = getResults(stmt);
+    return results.length > 0 ? results[0] : null;
+  } catch (err) {
+    console.error("Error fetching doctor:", err);
+    return null;
   }
 }
 
@@ -427,29 +484,52 @@ function getEvaluationStats() {
 
 // ===== PATIENT SURVEYS FUNCTIONS =====
 
-function insertSurvey(q1, q2, q3, q4, q5, waitingTime = null, suggestions = null) {
+// Helper function to convert rating to score (poor=1, average=2, excellent=3)
+function convertRatingToScore(rating) {
+  if (typeof rating === 'number') {
+    return rating;
+  }
+  const ratingMap = {
+    'poor': 1,
+    'average': 2,
+    'excellent': 3
+  };
+  return ratingMap[rating] || 1;
+}
+
+function insertSurvey(q1, q2, q3, q4, q5, waitingTime = null, suggestions = null, docKey = null) {
   try {
     const stmt = db.prepare(`
-      INSERT INTO patient_surveys (q1, q2, q3, q4, q5, waitingTime, suggestions)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO patient_surveys (docKey, q1, q2, q3, q4, q5, waitingTime, suggestions)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
-    stmt.bind([q1, q2, q3, q4, q5, waitingTime, suggestions]);
+    stmt.bind([docKey, q1, q2, q3, q4, q5, waitingTime, suggestions]);
     stmt.step();
     stmt.free();
     saveDatabase();
-    return { q1, q2, q3, q4, q5, waitingTime, suggestions };
+    return { docKey, q1, q2, q3, q4, q5, waitingTime, suggestions };
   } catch (err) {
     console.error("Error inserting survey:", err);
     throw err;
   }
 }
 
-function getAllSurveys(page = 1, limit = 50) {
+function getAllSurveys(page = 1, limit = 50, docKey = null) {
   try {
     const offset = (page - 1) * limit;
-    const sql = "SELECT * FROM patient_surveys ORDER BY createdAt DESC LIMIT ? OFFSET ?";
+    let sql = "SELECT * FROM patient_surveys";
+    const params = [];
+
+    if (docKey) {
+      sql += " WHERE docKey = ?";
+      params.push(docKey);
+    }
+
+    sql += " ORDER BY createdAt DESC LIMIT ? OFFSET ?";
+    params.push(limit, offset);
+
     const stmt = db.prepare(sql);
-    stmt.bind([limit, offset]);
+    stmt.bind(params);
     const results = getResults(stmt);
     return results;
   } catch (err) {
@@ -484,9 +564,9 @@ function deleteSurvey(id) {
   }
 }
 
-function getSurveyStats() {
+function getSurveyStats(docKey = null) {
   try {
-    const sql = `
+    let sql = `
       SELECT
         COUNT(*) as totalResponses,
         ROUND(AVG(q1), 2) as avgQ1,
@@ -494,18 +574,66 @@ function getSurveyStats() {
         ROUND(AVG(q3), 2) as avgQ3,
         ROUND(AVG(q4), 2) as avgQ4,
         ROUND(AVG(q5), 2) as avgQ5,
-        ROUND((AVG(q1) + AVG(q2) + AVG(q3) + AVG(q4) + AVG(q5)) / 5, 2) as avgOverall,
+        ROUND((SUM(q1) + SUM(q2) + SUM(q3) + SUM(q4) + SUM(q5)) * 100.0 / (COUNT(*) * 5 * 3), 1) as percentageOverall,
         ROUND(AVG(waitingTime), 2) as avgWaitingTime
       FROM patient_surveys
     `;
+
+    const params = [];
+    if (docKey) {
+      sql += " WHERE docKey = ?";
+      params.push(docKey);
+    }
+
     const stmt = db.prepare(sql);
+    if (params.length > 0) {
+      stmt.bind(params);
+    }
     stmt.step();
     const row = stmt.getAsObject();
     stmt.free();
     return row;
   } catch (err) {
     console.error("Error fetching survey stats:", err);
-    return { totalResponses: 0, avgQ1: 0, avgQ2: 0, avgQ3: 0, avgQ4: 0, avgQ5: 0, avgOverall: 0, avgWaitingTime: 0 };
+    return { totalResponses: 0, avgQ1: 0, avgQ2: 0, avgQ3: 0, avgQ4: 0, avgQ5: 0, percentageOverall: 0, avgWaitingTime: 0 };
+  }
+}
+
+function getSurveyMessagesByDoctor(docKey) {
+  try {
+    const messages = [];
+
+    // Get suggestions from patient_surveys
+    const suggestionsStmt = db.prepare(`
+      SELECT suggestions as message, createdAt, 'suggestion' as type FROM patient_surveys
+      WHERE docKey = ? AND suggestions IS NOT NULL AND suggestions != ''
+      ORDER BY createdAt DESC
+    `);
+    suggestionsStmt.bind([docKey]);
+    while (suggestionsStmt.step()) {
+      messages.push(suggestionsStmt.getAsObject());
+    }
+    suggestionsStmt.free();
+
+    // Get feedback from patient_feedback_surveys
+    const feedbackStmt = db.prepare(`
+      SELECT doctorFeedback as message, createdAt, 'feedback' as type FROM patient_feedback_surveys
+      WHERE docKey = ? AND doctorFeedback IS NOT NULL AND doctorFeedback != ''
+      ORDER BY createdAt DESC
+    `);
+    feedbackStmt.bind([docKey]);
+    while (feedbackStmt.step()) {
+      messages.push(feedbackStmt.getAsObject());
+    }
+    feedbackStmt.free();
+
+    // Sort all messages by createdAt descending
+    messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    return messages;
+  } catch (err) {
+    console.error("Error fetching survey messages:", err);
+    return [];
   }
 }
 
