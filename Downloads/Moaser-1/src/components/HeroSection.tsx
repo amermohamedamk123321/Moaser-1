@@ -32,14 +32,16 @@ export default function HeroSection() {
       <div className="container relative mx-auto flex min-h-screen flex-col items-center justify-center px-4 pt-24 text-center">
         <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-5 py-2 text-sm text-primary-foreground animate-fade-in-up">
           <Star className="h-4 w-4 fill-current" />
-          <span>مرکز دریافت بهترین خدمات تداوی دندان</span>
+          <span>{t("hero.badge")}</span>
         </div>
 
         <h1 className="mb-4 max-w-4xl font-heading text-4xl font-bold leading-tight text-primary-foreground sm:text-5xl md:text-6xl lg:text-7xl animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
-          {t("hero.title")}
+          {t("hero.heading1")}
+          <br />
+          <span className="text-secondary-foreground/80">{t("hero.heading2")}</span>
         </h1>
 
-        <p className="mb-10 max-w-2xl text-primary-foreground/60 animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
+        <p className="mb-10 max-w-xl text-primary-foreground/60 animate-fade-in-up" style={{ animationDelay: "0.45s" }}>
           {t("hero.subtitle")}
         </p>
 

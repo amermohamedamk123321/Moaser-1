@@ -1,44 +1,29 @@
 import { useTranslation } from "react-i18next";
-import { Scissors, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, Syringe, AlertCircle, Droplet } from "lucide-react";
+import { Scissors, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, Syringe } from "lucide-react";
 import { AnimatedSection, AnimatedItem } from "@/components/AnimatedSection";
 import digitalImg from "@/assets/digital-dentistry.jpg";
 import surgeryImg from "@/assets/surgery-room.jpg";
 
-const icons = [Scissors, Syringe, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap, AlertCircle, Droplet];
+const icons = [Scissors, Syringe, Scan, Heart, Sparkles, SmilePlus, ShieldCheck, Zap];
 
 export default function ServicesSection() {
   const { t } = useTranslation();
 
-  const services = Array.from({ length: 10 }, (_, i) => {
-    let serviceNum = i + 1;
-    if (i === 6) {
-      return {
-        icon: icons[i],
-        title: t("services.s4TeamApproachTitle"),
-        desc: t("services.s4TeamApproachDesc"),
-      };
-    }
-    if (i >= 7) {
-      serviceNum = i;
-    }
-    return {
-      icon: icons[i],
-      title: t(`services.s${serviceNum}Title`),
-      desc: t(`services.s${serviceNum}Desc`),
-    };
-  });
+  const services = Array.from({ length: 8 }, (_, i) => ({
+    icon: icons[i],
+    title: t(`services.s${i + 1}Title`),
+    desc: t(`services.s${i + 1}Desc`),
+  }));
 
   return (
     <section id="services" className="relative py-24 lg:py-32 bg-muted/50">
       <AnimatedSection className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl text-center mb-16">
-          {t("services.tag") && (
-            <AnimatedItem>
-              <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
-                {t("services.tag")}
-              </span>
-            </AnimatedItem>
-          )}
+          <AnimatedItem>
+            <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
+              {t("services.tag")}
+            </span>
+          </AnimatedItem>
           <AnimatedItem>
             <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl mb-6">
               {t("services.title")}
@@ -51,12 +36,12 @@ export default function ServicesSection() {
           </AnimatedItem>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {services.map((s, i) => (
             <AnimatedItem key={i} variant="scaleUp">
-              <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-card transition-all duration-500 hover:-translate-y-1 hover:shadow-glow h-full flex flex-col">
+              <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-card transition-all duration-500 hover:-translate-y-1 hover:shadow-glow h-full">
                 <div className="absolute top-0 right-0 h-24 w-24 rounded-bl-[4rem] bg-accent/50 transition-all duration-500 group-hover:h-32 group-hover:w-32" />
-                <div className="relative flex-1">
+                <div className="relative">
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-secondary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                     <s.icon className="h-6 w-6" />
                   </div>

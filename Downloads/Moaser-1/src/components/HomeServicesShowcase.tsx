@@ -25,13 +25,11 @@ export default function HomeServicesShowcase() {
 
       <AnimatedSection className="container relative mx-auto px-4">
         <div className="mx-auto max-w-3xl text-center mb-16">
-          {t("home.servicesTag") && (
-            <AnimatedItem>
-              <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
-                {t("home.servicesTag")}
-              </span>
-            </AnimatedItem>
-          )}
+          <AnimatedItem>
+            <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
+              {t("home.servicesTag")}
+            </span>
+          </AnimatedItem>
           <AnimatedItem>
             <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl mb-4">
               {t("home.servicesTitle")}

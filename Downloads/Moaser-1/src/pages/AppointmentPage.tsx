@@ -114,6 +114,11 @@ export default function AppointmentPage() {
           <AnimatedSection className="container relative mx-auto px-4">
             <div className="mx-auto max-w-3xl text-center mb-12">
               <AnimatedItem>
+                <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
+                  {t("appointment.tag")}
+                </span>
+              </AnimatedItem>
+              <AnimatedItem>
                 <h1 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl mb-4">
                   {t("appointment.title")}
                 </h1>

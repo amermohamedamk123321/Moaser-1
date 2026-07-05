@@ -35,10 +35,6 @@ function validateRating(rating) {
   return ["poor", "average", "excellent"].includes(rating);
 }
 
-function validateWaitingTimeRating(rating) {
-  return ["very_long", "long", "appropriate"].includes(rating);
-}
-
 function validateServiceType(service) {
   const validServices = [
     "maxillofacial",
@@ -149,69 +145,6 @@ function validateEvaluationData(data) {
   };
 }
 
-function validateSurveyData(data) {
-  const errors = [];
-
-  ["q1", "q2", "q3", "q4", "q5"].forEach(field => {
-    const val = data[field];
-    if (val === undefined || val === null) {
-      errors.push(`${field} is required`);
-    } else if (!Number.isInteger(val) || val < 1 || val > 3) {
-      errors.push(`${field} must be an integer between 1 and 3`);
-    }
-  });
-
-  if (data.waitingTime !== undefined && data.waitingTime !== null) {
-    if (!Number.isInteger(data.waitingTime) || data.waitingTime < 1 || data.waitingTime > 3) {
-      errors.push("waitingTime must be an integer between 1 and 3");
-    }
-  }
-
-  if (data.suggestions !== undefined && data.suggestions !== null) {
-    if (typeof data.suggestions !== "string" || data.suggestions.length > 1000) {
-      errors.push("suggestions must be a string with max 1000 characters");
-    }
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-}
-
-function validateFeedbackSurveyData(data) {
-  const errors = [];
-
-  if (!data.docKey || !data.docKey.match(/^doc\d$/)) {
-    errors.push("Invalid doctor selection");
-  }
-
-  if (data.doctorFeedback !== undefined && data.doctorFeedback !== null) {
-    if (typeof data.doctorFeedback !== "string" || data.doctorFeedback.length > 2000) {
-      errors.push("Doctor feedback must be a string with max 2000 characters");
-    }
-  }
-
-  const requiredFields = ["q1", "q2", "q3", "q4", "q5"];
-for (const field of requiredFields) {
-    const val = data[field];
-    // Accept both numeric (1-3) and string ("poor","average","excellent")
-    if (typeof val === 'number') {
-        if (!Number.isInteger(val) || val < 1 || val > 3) {
-            errors.push(`Invalid ${field} rating number`);
-        }
-    } else {
-        if (!validateRating(val)) {
-            errors.push(`Invalid ${field} rating`);
-        }
-    }
-}
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-}
-
 export {
   validateEmail,
   validatePhone,
@@ -220,12 +153,9 @@ export {
   validateDateFormat,
   validateTimeFormat,
   validateRating,
-  validateWaitingTimeRating,
   validateServiceType,
   validateAppointmentData,
   validateLoginData,
   validateChangePasswordData,
-  validateEvaluationData,
-  validateSurveyData,
-  validateFeedbackSurveyData
+  validateEvaluationData
 };

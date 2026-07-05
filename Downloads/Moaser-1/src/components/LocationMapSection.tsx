@@ -11,24 +11,16 @@ export default function LocationMapSection() {
     <section className="relative py-24 lg:py-32 bg-muted/30">
       <AnimatedSection className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl text-center mb-12">
-          {(t("location.tag") || t("location.title")) && (
-            <>
-              {t("location.tag") && (
-                <AnimatedItem>
-                  <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
-                    {t("location.tag")}
-                  </span>
-                </AnimatedItem>
-              )}
-              {t("location.title") && (
-                <AnimatedItem>
-                  <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl mb-4">
-                    {t("location.title")}
-                  </h2>
-                </AnimatedItem>
-              )}
-            </>
-          )}
+          <AnimatedItem>
+            <span className="inline-block text-sm font-semibold uppercase tracking-widest text-secondary mb-4">
+              {t("location.tag")}
+            </span>
+          </AnimatedItem>
+          <AnimatedItem>
+            <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl mb-4">
+              {t("location.title")}
+            </h2>
+          </AnimatedItem>
           <AnimatedItem>
             <div className="flex items-center justify-center gap-2 text-muted-foreground">
               <MapPin className="h-5 w-5 text-secondary shrink-0" />
@@ -51,7 +43,7 @@ export default function LocationMapSection() {
             ) : (
               <iframe
                 title="Moaser Specialized Dental Hospital Location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3289.5!2d69.0526886!3d34.4972451!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDI5JzUwLjEiTiA2OcKwMDMnMDkuNyJF!5e0!3m2!1sen!2s!4v1700000000000"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3289.5!2d69.1305!3d34.5155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDMwJzU1LjgiTiA2OcKwMDcnNDkuOCJF!5e0!3m2!1sen!2s!4v1700000000000"
                 width="100%"
                 height="450"
                 style={{ border: 0 }}

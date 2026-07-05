@@ -18,7 +18,6 @@ export default function Navbar() {
     { label: t("nav.about"), href: "/about" },
     { label: t("nav.services"), href: "/services" },
     { label: t("nav.doctors"), href: "/doctors" },
-    { label: t("patientSurvey.tag"), href: "/patient-survey" },
     { label: t("nav.contact"), href: "/contact" },
     { label: t("nav.appointment"), href: "/appointment" },
   ];
