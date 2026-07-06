@@ -177,7 +177,7 @@ export default function PatientSurveyForm() {
               </h1>
             </AnimatedItem>
             <AnimatedItem>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground whitespace-pre-line">
                 {t("patientSurvey.subtitle")}
               </p>
             </AnimatedItem>

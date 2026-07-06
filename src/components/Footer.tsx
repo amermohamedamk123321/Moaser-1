@@ -32,7 +32,7 @@ export default function Footer() {
             </div>
             <p className="font-heading text-lg font-bold text-center lg:text-left mb-3">{t("footer.brandName")}</p>
             <p className="text-sm text-primary-foreground/70 leading-relaxed text-center lg:text-right">
-              روزنه یی به سوی تداوی‌های معاصر — ارائه خدمات طبابت‌دندان نزدیک به معیارهای بین‌المللی در کابل.
+              {t("footer.brandDesc")}
             </p>
           </div>
 

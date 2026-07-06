@@ -8,6 +8,10 @@ import {
   getAdminUserByUsername,
   createAdminUser,
   updateAdminPassword,
+  // Doctors
+  createDoctor,
+  getAllDoctors,
+  getDoctorByKey,
   // Appointments
   createAppointment,
   getAllAppointments,
@@ -28,6 +32,8 @@ import {
   getSurveyById,
   deleteSurvey,
   getSurveyStats,
+  getSurveyMessagesByDoctor,
+  convertRatingToScore,
   // Feedback Surveys
   insertFeedbackSurvey,
   getAllFeedbackSurveys,
@@ -90,6 +96,50 @@ app.use((req, res, next) => {
 // ===== HEALTH CHECK =====
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
+});
+
+// ===== DOCTOR ROUTES =====
+
+// GET /api/doctors - Get all doctors (admin only)
+app.get("/api/doctors", authMiddleware, apiLimiter, async (req, res) => {
+  try {
+    const doctors = await getAllDoctors();
+    res.json({ success: true, doctors });
+  } catch (error) {
+    console.error("Error fetching doctors:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/doctors/:docKey - Get specific doctor (admin only)
+app.get("/api/doctors/:docKey", authMiddleware, apiLimiter, async (req, res) => {
+  try {
+    const doctor = await getDoctorByKey(req.params.docKey);
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found" });
+    }
+    res.json({ success: true, doctor });
+  } catch (error) {
+    console.error("Error fetching doctor:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// POST /api/doctors - Create new doctor (admin only)
+app.post("/api/doctors", authMiddleware, apiLimiter, async (req, res) => {
+  try {
+    const { docKey, name, specialty } = req.body;
+
+    if (!docKey || !name) {
+      return res.status(400).json({ error: "docKey and name are required" });
+    }
+
+    const doctor = await createDoctor(docKey, name, specialty || null);
+    res.status(201).json({ success: true, doctor });
+  } catch (error) {
+    console.error("Error creating doctor:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // ===== ADMIN AUTHENTICATION ROUTES =====
@@ -376,9 +426,10 @@ app.get("/api/surveys", authMiddleware, apiLimiter, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 50;
+    const docKey = req.query.docKey || null;
 
-    const surveys = await getAllSurveys(page, limit);
-    const stats = await getSurveyStats();
+    const surveys = await getAllSurveys(page, limit, docKey);
+    const stats = await getSurveyStats(docKey);
 
     res.json({ success: true, surveys, stats });
   } catch (error) {
@@ -411,6 +462,17 @@ app.delete("/api/surveys/:id", authMiddleware, apiLimiter, async (req, res) => {
     res.json({ success: true, message: "Survey deleted successfully" });
   } catch (error) {
     console.error("Error deleting survey:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/surveys/:docKey/messages - Get all messages for a doctor (admin only)
+app.get("/api/surveys/:docKey/messages", authMiddleware, apiLimiter, async (req, res) => {
+  try {
+    const messages = await getSurveyMessagesByDoctor(req.params.docKey);
+    res.json({ success: true, messages });
+  } catch (error) {
+    console.error("Error fetching survey messages:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
