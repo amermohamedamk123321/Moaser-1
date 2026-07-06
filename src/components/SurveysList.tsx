@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { DoctorSelector } from "./DoctorSelector";
+import { SurveyMessages } from "./SurveyMessages";
 
 interface Survey {
   id: number;
+  docKey?: string;
   q1: number;
   q2: number;
   q3: number;
@@ -25,7 +28,7 @@ interface SurveyStats {
   avgQ3: number;
   avgQ4: number;
   avgQ5: number;
-  avgOverall: number;
+  percentageOverall: number;
   avgWaitingTime?: number;
 }
 
@@ -39,16 +42,20 @@ const QUESTIONS = [
   { key: "q5", label: "Follow-up Care" },
 ];
 
-function getColorByRating(avg: number): string {
-  if (avg < 3) return "text-red-600";
-  if (avg < 4) return "text-yellow-600";
+function getColorByPercentage(percentage: number): string {
+  if (percentage < 34) return "text-red-600";
+  if (percentage < 67) return "text-yellow-600";
   return "text-green-600";
 }
 
-function getProgressColor(avg: number): string {
-  if (avg < 3) return "bg-red-500";
-  if (avg < 4) return "bg-yellow-500";
+function getProgressColor(percentage: number): string {
+  if (percentage < 34) return "bg-red-500";
+  if (percentage < 67) return "bg-yellow-500";
   return "bg-green-500";
+}
+
+function getRatingPercentage(rating: number): number {
+  return (rating / 3) * 100;
 }
 
 export default function SurveysList() {
@@ -61,15 +68,16 @@ export default function SurveysList() {
     avgQ3: 0,
     avgQ4: 0,
     avgQ5: 0,
-    avgOverall: 0,
+    percentageOverall: 0,
     avgWaitingTime: 0,
   });
+  const [selectedDocKey, setSelectedDocKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     loadSurveys();
-  }, []);
+  }, [selectedDocKey]);
 
   const loadSurveys = async () => {
     try {
@@ -82,7 +90,12 @@ export default function SurveysList() {
         return;
       }
 
-      const response = await fetch(`${API_URL}/api/surveys`, {
+      const url = new URL(`${API_URL}/api/surveys`);
+      if (selectedDocKey) {
+        url.searchParams.append("docKey", selectedDocKey);
+      }
+
+      const response = await fetch(url.toString(), {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -101,7 +114,7 @@ export default function SurveysList() {
         avgQ3: 0,
         avgQ4: 0,
         avgQ5: 0,
-        avgOverall: 0,
+        percentageOverall: 0,
         avgWaitingTime: 0,
       });
     } catch (err) {
@@ -167,6 +180,12 @@ export default function SurveysList() {
 
   return (
     <div className="space-y-6">
+      {/* Doctor Selector */}
+      <DoctorSelector 
+        onSelectDoctor={setSelectedDocKey}
+        selectedDocKey={selectedDocKey}
+      />
+
       {/* Statistics Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
@@ -184,11 +203,11 @@ export default function SurveysList() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className={`text-3xl font-bold ${getColorByRating(stats.avgOverall)}`}>
-                {stats.avgOverall.toFixed(2)}
+              <div className={`text-3xl font-bold ${getColorByPercentage(stats.percentageOverall)}`}>
+                {stats.percentageOverall.toFixed(0)}%
               </div>
               <p className="text-sm text-muted-foreground mt-1">
-                Overall Average
+                Overall Score
               </p>
             </div>
           </CardContent>
@@ -204,18 +223,18 @@ export default function SurveysList() {
           <CardContent className="space-y-6">
             {QUESTIONS.map((q) => {
               const avg = stats[q.key as keyof SurveyStats] as number;
-              const percentage = (avg / 3) * 100;
+              const percentage = getRatingPercentage(avg);
               return (
                 <div key={q.key}>
                   <div className="flex items-center justify-between mb-2">
                     <label className="font-medium text-sm">{q.label}</label>
-                    <span className={`font-bold ${getColorByRating(avg)}`}>
-                      {avg.toFixed(2)} / 3.0
+                    <span className={`font-bold ${getColorByPercentage(percentage)}`}>
+                      {percentage.toFixed(0)}%
                     </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full transition-all ${getProgressColor(avg)}`}
+                      className={`h-2 rounded-full transition-all ${getProgressColor(percentage)}`}
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -284,6 +303,9 @@ export default function SurveysList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Survey Messages */}
+      <SurveyMessages docKey={selectedDocKey} />
     </div>
   );
 }

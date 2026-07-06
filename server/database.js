@@ -141,8 +141,47 @@ function createTables() {
     db.run(patientFeedbackSurveysTableSql);
     saveDatabase();
     console.log("Database tables ensured");
+
+    // Initialize doctors if none exist
+    initializeDoctors();
   } catch (err) {
     console.error("Error creating tables:", err);
+  }
+}
+
+// Initialize default doctors
+function initializeDoctors() {
+  try {
+    const stmt = db.prepare("SELECT COUNT(*) as count FROM doctors");
+    stmt.step();
+    const result = stmt.getAsObject();
+    stmt.free();
+
+    if (result.count === 0) {
+      const defaultDoctors = [
+        { docKey: 'doc1', name: 'Dr. Ahmad', specialty: 'General Dentistry' },
+        { docKey: 'doc2', name: 'Dr. Fatima', specialty: 'Orthodontics' },
+        { docKey: 'doc3', name: 'Dr. Mohammed', specialty: 'Implants' },
+      ];
+
+      for (const doc of defaultDoctors) {
+        try {
+          const insertStmt = db.prepare(`
+            INSERT INTO doctors (docKey, name, specialty, status)
+            VALUES (?, ?, ?, 'active')
+          `);
+          insertStmt.bind([doc.docKey, doc.name, doc.specialty]);
+          insertStmt.step();
+          insertStmt.free();
+        } catch (err) {
+          console.error(`Error inserting doctor ${doc.docKey}:`, err);
+        }
+      }
+      saveDatabase();
+      console.log("Default doctors initialized");
+    }
+  } catch (err) {
+    console.error("Error initializing doctors:", err);
   }
 }
 
@@ -758,6 +797,10 @@ export {
   getAdminUserByUsername,
   createAdminUser,
   updateAdminPassword,
+  // Doctors
+  createDoctor,
+  getAllDoctors,
+  getDoctorByKey,
   // Appointments
   createAppointment,
   getAllAppointments,
@@ -778,6 +821,8 @@ export {
   getSurveyById,
   deleteSurvey,
   getSurveyStats,
+  getSurveyMessagesByDoctor,
+  convertRatingToScore,
   // Feedback Surveys
   insertFeedbackSurvey,
   getAllFeedbackSurveys,
